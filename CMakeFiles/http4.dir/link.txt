@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/http4.dir/main.cpp.o CMakeFiles/http4.dir/OpSocket.cpp.o CMakeFiles/http4.dir/Conf.cpp.o CMakeFiles/http4.dir/ThreadWork.cpp.o CMakeFiles/http4.dir/QueueMessage.cpp.o  -o http4 -lpthread 
