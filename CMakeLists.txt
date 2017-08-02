@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.7)
+project(http)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(SOURCE_FILES main.cpp OpSocket.h OpSocket.cpp Conf.cpp Conf.h ThreadWork.cpp ThreadWork.h QueueMessage.cpp QueueMessage.h)
+add_executable(http ${SOURCE_FILES})
+find_package(Threads REQUIRED)
+target_link_libraries(http Threads::Threads)
