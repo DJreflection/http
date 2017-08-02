@@ -1,3 +1,0 @@
-/home/zy/Test/http4/CMakeFiles/edit_cache.dir
-/home/zy/Test/http4/CMakeFiles/rebuild_cache.dir
-/home/zy/Test/http4/CMakeFiles/http4.dir

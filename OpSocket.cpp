@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -20,8 +21,8 @@ int InitTcpSocket(const uint16_t port){
         exit(0);
     }
     int flags = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &flags, sizeof(flags));
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &flags, sizeof(flags));
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &flags, sizeof(flags));
+    setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &flags, sizeof(flags));
 
     struct  sockaddr_in server;
     memset(&server, 0, sizeof(server));
