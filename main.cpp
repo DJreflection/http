@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include "Conf.h"
+#include "Configure.h"
 #include "OpSocket.h"
 #include "ThreadWork.h"
 #include "QueueMessage.h"

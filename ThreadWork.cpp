@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#include "Conf.h"
+#include "Configure.h"
 #include "ThreadWork.h"
 #include "OpSocket.h"
 #include "QueueMessage.h"
