@@ -1,0 +1,5 @@
+{
+   "log_level" : "debug",
+   "port" : 12345,
+   "root" : "~/Workspace/http/www"
+}

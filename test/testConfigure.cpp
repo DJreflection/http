@@ -1,0 +1,26 @@
+//
+// Created by zy on 17-11-17.
+//
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <jsoncpp/json/json.h>
+#include "../Configure.h"
+
+using namespace Json;
+
+int main()
+{
+    Json::Value val;
+    val["port"] = 12345;
+    val["root"] = "~/Workspace/http/www";
+    val["log_level"] = "debug";
+
+    std::ofstream writer("/home/zy/Documents/http/test/tt");
+    writer << val.toStyledString();
+
+    Configure::readConfigure("/home/zy/Documents/http/test/tt");
+    Configure::printConfigure();
+    return 0;
+}
