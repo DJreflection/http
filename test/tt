@@ -1,5 +1,6 @@
 {
    "log_level" : "debug",
    "port" : 12345,
-   "root" : "~/Workspace/http/www"
+   "root" : "~/Workspace/http/www",
+   "thread_number" : 4
 }

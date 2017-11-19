@@ -16,9 +16,13 @@ int main()
     val["port"] = 12345;
     val["root"] = "~/Workspace/http/www";
     val["log_level"] = "debug";
+    val["thread_number"] = 4;
 
+    ///home/zy/Documents/http/test/tt
+    // /home/zy/Documents/http/test/tt
     std::ofstream writer("/home/zy/Documents/http/test/tt");
     writer << val.toStyledString();
+    writer.close();
 
     Configure::readConfigure("/home/zy/Documents/http/test/tt");
     Configure::printConfigure();
