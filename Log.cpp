@@ -18,9 +18,10 @@
 //    print(rest...);
 //}
 
-void Log::print()
+template <class T>
+void Log::print(T head)
 {
-    std::cout << std::endl;
+    std::cout << head << std::endl;
 }
 
 template <class T, class... Args>

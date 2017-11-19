@@ -6,14 +6,7 @@
 #define HTTP_CONFIGURE_H
 
 #include <stdint.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 #include <iostream>
-
-#define BUF_SIZE 10240
-#define EVENT_SIZE 10240
-
-
 #include <fstream>
 #include <sstream>
 #include <jsoncpp/json/json.h>
@@ -36,5 +29,4 @@ public:
     static void readConfigure(std::string &&url);
     static void printConfigure();
 };
-void ReadConf(struct Conf &conf);
 #endif //HTTP_CONFIGURE_H

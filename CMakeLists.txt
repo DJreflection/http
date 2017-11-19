@@ -16,6 +16,15 @@ set(testTimeSourceFile test/testTime.cpp Time.cpp Time.h)
 add_executable(testTime ${testTimeSourceFile})
 target_link_libraries(testTime jsoncpp)
 
-set(testLogSourceFile test/testLog.cpp Log.cpp Log.h)
+set(testLogSourceFile test/testLog.cpp Log.cpp Log.h Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testLog ${testLogSourceFile})
 target_link_libraries(testLog jsoncpp)
+
+set(testLogSourceFile2 fff.cpp Log.cpp Log.h Configure.cpp Configure.h Time.cpp Time.h)
+add_executable(fff ${testLogSourceFile2})
+target_link_libraries(fff jsoncpp)
+
+
+set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.cpp Log.h Configure.cpp Configure.h Time.cpp Time.h)
+add_executable(testHttpServer ${testHttpServerSourceFile})
+target_link_libraries(testHttpServer jsoncpp)

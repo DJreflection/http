@@ -14,7 +14,9 @@ class Log
 {
 
 private:
-    static void print();
+    template <class T>
+    static void print(T head);
+
     template <class T, class... Args>
     static void print(T head, Args... args);
 
