@@ -3,8 +3,6 @@
 //
 #include "Configure.h"
 
-const uint32_t Configure::buffer_size = 10240;
-const uint32_t Configure::event_size = 1024;
 uint16_t Configure::port = 8080;
 uint32_t Configure::thread_number = 4;
 
@@ -52,8 +50,6 @@ void Configure::printConfigure()
 {
     if(log_level != debug)
         return ;
-    std::cout << "buffer_size :" << buffer_size << std::endl;
-    std::cout << "event_size :" << event_size << std::endl;
     std::cout << "thread_number :" << thread_number << std::endl;
     std::cout << "port :" << port << std::endl;
     std::cout << "root :" << root << std::endl;

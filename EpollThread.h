@@ -17,7 +17,7 @@ public:
     typedef std::function<void (const std::string &message)> OnMessage;
     EpollThread();
 
-    void epollAddSocket(int socketfd);
+    void epollAddSocket(int socketfd, uint32_t status);
     void epollModSocket(int socketfd, uint32_t new_status);
     void setOnMessage(OnMessage &onMessage);
     void startListenSocket();
@@ -26,7 +26,10 @@ private:
     void listenSocket();
 
     int epollfd;
+    static const uint32_t EVENTSIZE;
+    static const uint32_t BUFFERSIZE;
     std::thread thread_id;
+
     OnMessage _onMessage;
 };
 #endif //HTTP_EPOLLTHREAD_H

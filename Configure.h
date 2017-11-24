@@ -14,8 +14,6 @@
 class Configure
 {
 public:
-    static const uint32_t buffer_size;
-    static const uint32_t event_size;
     static uint32_t thread_number;
     static uint16_t port;
     static std::string root;
