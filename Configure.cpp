@@ -12,9 +12,9 @@ std::string Configure::root = "~/Workspace/http/www/";
 
 Configure::logLevel Configure::log_level = debug;
 
-void Configure::readConfigure(std::string &&url)
+void Configure::readConfigure(const std::string &url)
 {
-    std::cout << url << std::endl;
+    //std::cout << url << std::endl;
 
     try{
         std::stringstream json_value;
@@ -22,6 +22,7 @@ void Configure::readConfigure(std::string &&url)
         json_value << reader.rdbuf();
         reader.close();
 
+        //std::cout << json_value.str() << std::endl;
         Json::Reader reader_json;
         Json::Value val;
 
@@ -35,7 +36,7 @@ void Configure::readConfigure(std::string &&url)
         port = val["port"].asUInt();
         root = val["root"].asString();
 
-        std::string &&log_level_tmp = val["log_level"].asString();
+        std::string log_level_tmp = val["log_level"].asString();
         if(log_level_tmp == "warn")
             log_level = warn;
         else if(log_level_tmp == "normal")

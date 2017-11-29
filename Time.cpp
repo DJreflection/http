@@ -15,7 +15,7 @@ const std::string Time::getNowTime() {
     struct tm *time_local;
     time_local = localtime(&time_timet);
 
-    sprintf(buffer, "%04d年%02d月%02d日 %02d:%02d:%02d",
+    sprintf(buffer, "%04d年%02d月%02d日%02d:%02d:%02d",
             time_local->tm_year+1900,
             time_local->tm_mon+1,
             time_local->tm_mday,
@@ -32,7 +32,7 @@ const std::string Time::timetToString(const time_t &time)
     struct tm *local_time;
     local_time = localtime(&time);
 
-    sprintf(buffer, "%04d年%02d月%02d日 %02d:%02d:%02d",
+    sprintf(buffer, "%04d年%02d月%02d日%02d:%02d:%02d",
             local_time->tm_year+1900,
             local_time->tm_mon+1,
             local_time->tm_mday,
@@ -41,7 +41,7 @@ const std::string Time::timetToString(const time_t &time)
             local_time->tm_sec
     );
 
-    return std::string(buffer, 26);
+    return std::string(buffer, 25);
 }
 
 char Time::buffer[64] = {};

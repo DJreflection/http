@@ -17,7 +17,6 @@ using namespace std;
 #include "Configure.h"
 #include "ThreadWork.h"
 #include "OpSocket.h"
-#include "QueueMessage.h"
 
 #define HEADER_CLOSE "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %ld\r\n\r\n"
 
@@ -26,7 +25,6 @@ using namespace std;
     Keep-Alive: timeout=20\r\nContent-Type: text/html\r\nContent-Length: %ld\r\n\r\n"
 
 extern struct Conf conf;
-extern MessageQueue que;
 
 void _Analysis(char *buf, char *way, char *uri){
     size_t e = 0, x = 0;

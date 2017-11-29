@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <arpa/inet.h>
 #include "Configure.h"
-#include "Log.h"
+#include "Log.hpp"
 
 class HttpServer
 {

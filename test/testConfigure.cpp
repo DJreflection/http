@@ -18,13 +18,14 @@ int main()
     val["log_level"] = "debug";
     val["thread_number"] = 4;
 
-    ///home/zy/Documents/http/test/tt
+    //std::cout << val.toStyledString() << std::endl;
     // /home/zy/Documents/http/test/tt
-    std::ofstream writer("/home/zy/Documents/http/test/tt");
+
+    std::ofstream writer("/home/zy/Documents/github/http/test/tt");
     writer << val.toStyledString();
     writer.close();
 
-    Configure::readConfigure("/home/zy/Documents/http/test/tt");
+    Configure::readConfigure("/home/zy/Documents/github/http/test/tt");
     Configure::printConfigure();
     return 0;
 }

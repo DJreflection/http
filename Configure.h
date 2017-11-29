@@ -26,7 +26,7 @@ public:
     };
 
     static logLevel log_level;
-    static void readConfigure(std::string &&url);
+    static void readConfigure(const std::string &url);
     static void printConfigure();
 };
 #endif //HTTP_CONFIGURE_H
