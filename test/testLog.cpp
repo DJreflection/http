@@ -2,15 +2,19 @@
 // Created by zy on 11/18/17.
 //
 
+#include <unistd.h>
+#include <memory>
+#include <pthread.h>
+#include <thread>
 #include "../Log.hpp"
-
-
 
 int main()
 {
-    Log::setLogLevel(Configure::debug);
-    Log::print(Configure::debug, "%s %d %d %s", "nihao", 1, 23, "hello");
-    Log::print(Configure::normal, "%s %d %d %s", "aa", 1 , 2, "hell");
-    Log::print(Configure::warn, "%s %s %s %d %d %s", "sdfd", " sf", "sf ", 1 , 2, "hell");
+    Log::setLogRoot("/home/zy/Http/");
+    Log::start();
+    Log::logDebug("fdskfd",1234, "sdfks", "23424", "sdf ", 1234);
+    Log::logNormal("sdjskf", 143892, "sdjkf", "1432", 234.23);
+    Log::logWarn("sdjskf", 1432.2342, "sfdfksl", "1432", "1324.23");
+    sleep(10);
     return 0;
 }

@@ -18,12 +18,7 @@ target_link_libraries(testTime jsoncpp)
 
 set(testLogSourceFile test/testLog.cpp Log.hpp Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testLog ${testLogSourceFile})
-target_link_libraries(testLog jsoncpp)
-
-set(testLogSourceFile2 fff.cpp Log.hpp Configure.cpp Configure.h Time.cpp Time.h)
-add_executable(fff ${testLogSourceFile2})
-target_link_libraries(fff jsoncpp)
-
+target_link_libraries(testLog jsoncpp pthread)
 
 set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.hpp Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testHttpServer ${testHttpServerSourceFile})

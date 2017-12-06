@@ -81,7 +81,7 @@ private:
     std::unique_ptr<Node> wait_pop_head(T& value)
     {
         std::unique_lock<std::mutex> head_lock(wait_for_data());
-        value = std::move(head.get()->data);
+        value = std::move(*head->data);
         return pop_head();
     }
 

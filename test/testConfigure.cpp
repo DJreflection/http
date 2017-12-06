@@ -18,14 +18,15 @@ int main()
     val["log_level"] = "debug";
     val["thread_number"] = 4;
 
-    //std::cout << val.toStyledString() << std::endl;
-    // /home/zy/Documents/http/test/tt
-
-    std::ofstream writer("/home/zy/Documents/github/http/test/tt");
+    std::ofstream writer("../test/tt");
     writer << val.toStyledString();
     writer.close();
 
-    Configure::readConfigure("/home/zy/Documents/github/http/test/tt");
-    Configure::printConfigure();
+    Configure::readConfigure("../test/tt");
+
+    std::cout << "thread_number :" << Configure::thread_number << std::endl;
+    std::cout << "port :" << Configure::port << std::endl;
+    std::cout << "root :" << Configure::root << std::endl;
+    std::cout << "log_level :" << Configure::log_level << std::endl;
     return 0;
 }

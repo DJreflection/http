@@ -17,14 +17,7 @@ public:
     static uint32_t thread_number;
     static uint16_t port;
     static std::string root;
-    enum logLevel{
-        debug,
-        normal,
-        warn,
-    };
-
-    static logLevel log_level;
+    static std::string log_level;
     static void readConfigure(const std::string &url);
-    static void printConfigure();
 };
 #endif //HTTP_CONFIGURE_H
