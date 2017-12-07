@@ -7,7 +7,7 @@
 
 EpollThread::EpollThread()
 {
-    epollfd = epoll_create1(EPOLL_CLOEXEC);
+    epollfd_ = epoll_create1(EPOLL_CLOEXEC);
 }
 
 const uint32_t EpollThread::BUFFERSIZE = 10240;
@@ -20,7 +20,7 @@ void EpollThread::epollAddSocket(int socketfd, uint32_t status)
     ev.events = status;
     ev.data.fd = socketfd;
 
-    int tmp = epoll_ctl(epollfd, EPOLL_CTL_ADD, socketfd, &ev);
+    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_ADD, socketfd, &ev);
     assert(tmp != -1);
 }
 
@@ -31,26 +31,21 @@ void EpollThread::epollModSocket(int socketfd, uint32_t new_status)
     ev.events = new_status;
     ev.data.fd = socketfd;
 
-    int tmp = epoll_ctl(epollfd, EPOLL_CTL_MOD, socketfd, &ev);
+    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_MOD, socketfd, &ev);
     assert(tmp != -1);
 }
 
-void EpollThread::setOnMessage(OnMessage &on_message)
-{
-    _onMessage = std::move(on_message);
-}
-
-
 void EpollThread::startListenSocket()
 {
-    thread_id = std::thread(std::bind(&EpollThread::listenSocket, this));
+    std::thread thread_id = std::thread(std::bind(&EpollThread::listenSocket, this));
+    thread_id_ = std::make_shared<std::thread>(std::move(thread_id));
 }
 
 
 void EpollThread::setNoBlock(int socketfd)
 {
     int status_old;
-    status_old = fcntl(socketfd, F_GETFL, 0))
+    status_old = fcntl(socketfd, F_GETFL, 0);
     assert(status_old >= 0);
 
     int tmp = fcntl(socketfd, F_SETFL, status_old | O_NONBLOCK);
@@ -64,9 +59,12 @@ void EpollThread::listenSocket()
 
     while(true)
     {
-        int size = epoll_wait(epollfd, event, EVENTSIZE, -1);
+        int size = epoll_wait(epollfd_, event, EVENTSIZE, -1);
         for(int i=0; i<size; ++ i)
         {
+            std::shared_ptr<std::pair<uint32_t ,int32_t>> source_data = event[i].data.ptr;
+
+            int read_bytes = read(sockfd, buffer, BUFFERSIZE);
 
         }
     }

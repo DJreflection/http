@@ -10,6 +10,7 @@
 #include <queue>
 #include <cstring>
 #include <thread>
+#include <memory>
 #include "Queue.hpp"
 #include "Time.h"
 
@@ -21,7 +22,7 @@ private:
     template <typename T>
     static void print(std::stringstream& buffer, T t)
     {
-        buffer << t;
+        buffer << t << std::endl;
     }
 
     template <typename T, typename... Args>
@@ -98,9 +99,8 @@ public:
     static void start()
     {
 
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
-        *thread_id_ = std::thread(consumer);
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
+        std::thread thread_tmp = std::thread{consumer};
+        thread_id_ = std::make_shared<std::thread>(std::move(thread_tmp));
     }
 
 private:
@@ -113,7 +113,6 @@ private:
 
     static void consumer()
     {
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
         int len = 0; // max : 67108864
         std::ofstream file;
         while(true)
@@ -121,15 +120,14 @@ private:
             if(len == 0)
             {
                 std::string file_name = root_ + Time::getNowTime();
-                std::cout << __FILE__ << " " << __LINE__ << std::endl;
                 file.open(file_name, std::ofstream::app);
-                std::cout << __FILE__ << " " << __LINE__ << std::endl;
             }
 
             std::string log;
             queue_.wait_and_pop(log);
 
             file << log;
+            file.flush();
             len += log.size();
 
             if(len >= 67108864)
@@ -142,13 +140,13 @@ private:
 
     static logLevel log_level_;
     static std::string root_;
-    static std::thread* thread_id_;
+    static std::shared_ptr<std::thread> thread_id_;
     static QueueThread<std::string> queue_;
 };
 
 Log::logLevel Log::log_level_ = debug;
 std::string Log::root_ = {};
-std::thread* Log::thread_id_ = nullptr;
+std::shared_ptr<std::thread> Log::thread_id_ = nullptr;
 QueueThread<std::string> Log::queue_{};
 
 #endif //HTTP_LOG_H

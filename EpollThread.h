@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <cstring>
 #include <thread>
+#include <unistd.h>
 #include <fcntl.h>
 #include <functional>
 
@@ -19,17 +20,16 @@ public:
 
     void epollAddSocket(int socketfd, uint32_t status);
     void epollModSocket(int socketfd, uint32_t new_status);
-    void setOnMessage(OnMessage &onMessage);
     void startListenSocket();
 private:
     void setNoBlock(int socketfd);
     void listenSocket();
 
-    int epollfd;
+    int epollfd_;
+    std::shared_ptr<std::thread> thread_id_;
+    //OnMessage _onMessage;
+
     static const uint32_t EVENTSIZE;
     static const uint32_t BUFFERSIZE;
-    std::thread thread_id;
-
-    OnMessage _onMessage;
 };
 #endif //HTTP_EPOLLTHREAD_H

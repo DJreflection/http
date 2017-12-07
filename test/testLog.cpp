@@ -4,8 +4,6 @@
 
 #include <unistd.h>
 #include <memory>
-#include <pthread.h>
-#include <thread>
 #include "../Log.hpp"
 
 int main()

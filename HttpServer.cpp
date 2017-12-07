@@ -24,7 +24,7 @@ HttpServer::HttpServer()
     tmp = bind(tcp_sockfd, (struct sockaddr *)&server, sizeof(server));
     assert(tmp != -1);
 
-    tmp = listen(tcp_sockfd, Configure::buffer_size);
+    tmp = listen(tcp_sockfd, 1024);
     assert(tmp != -1);
 }
 
@@ -37,7 +37,7 @@ void HttpServer::waitConnected()
     {
         int socketConnect = accept(tcp_sockfd, (struct sockaddr *)&client, &clientlen);
 
-        Log::printNormal(inet_ntoa(client.sin_addr), " Connected");
+        // std::pair<uint32_t, sockfd>, 在epoll中
     }
 }
 
