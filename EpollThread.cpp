@@ -13,25 +13,25 @@ EpollThread::EpollThread()
 const uint32_t EpollThread::BUFFERSIZE = 10240;
 const uint32_t EpollThread::EVENTSIZE = 1024;
 
-void EpollThread::epollAddSocket(int socketfd, uint32_t status)
+
+void epollAddSocket(const int& socketfd, void* const message, const uint32_t& status)
 {
     struct epoll_event ev;
     memset(&ev, 0, sizeof(ev));
     ev.events = status;
-    ev.data.fd = socketfd;
+    ev.data.ptr = message;
 
-    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_ADD, socketfd, &ev);
+    int tmp = epoll_ctl(socketfd, EPOLL_CTL_ADD, socketfd, &ev);
     assert(tmp != -1);
 }
 
-void EpollThread::epollModSocket(int socketfd, uint32_t new_status)
+void epollModSocket(const int& socketfd, const uint32_t& new_status)
 {
     struct epoll_event ev;
     memset(&ev, 0, sizeof(ev));
     ev.events = new_status;
-    ev.data.fd = socketfd;
 
-    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_MOD, socketfd, &ev);
+    int tmp = epoll_ctl(socketfd, EPOLL_CTL_MOD, socketfd, &ev);
     assert(tmp != -1);
 }
 
@@ -64,8 +64,13 @@ void EpollThread::listenSocket()
         {
             std::shared_ptr<std::pair<uint32_t ,int32_t>> source_data = event[i].data.ptr;
 
-            int read_bytes = read(sockfd, buffer, BUFFERSIZE);
+            int read_bytes = read(source_data.get()->second, buffer, BUFFERSIZE);
+            if(read_bytes <= 0)
+            {
+                continue;
+            }
 
+            std::cout << std::string{buffer, read_bytes} << std::endl;
         }
     }
 }

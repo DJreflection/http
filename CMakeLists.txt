@@ -20,6 +20,6 @@ set(testLogSourceFile test/testLog.cpp Log.hpp Configure.cpp Configure.h Time.cp
 add_executable(testLog ${testLogSourceFile})
 target_link_libraries(testLog jsoncpp pthread)
 
-set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.hpp Configure.cpp Configure.h Time.cpp Time.h)
+set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.hpp Configure.h Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testHttpServer ${testHttpServerSourceFile})
 target_link_libraries(testHttpServer jsoncpp)

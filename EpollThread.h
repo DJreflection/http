@@ -18,8 +18,8 @@ public:
     typedef std::function<void (const std::string &message)> OnMessage;
     EpollThread();
 
-    void epollAddSocket(int socketfd, uint32_t status);
-    void epollModSocket(int socketfd, uint32_t new_status);
+    void epollAddSocket(const int& socketfd, void* const message, const uint32_t& status);
+    void epollModSocket(const int& socketfd, const uint32_t& new_status);
     void startListenSocket();
 private:
     void setNoBlock(int socketfd);

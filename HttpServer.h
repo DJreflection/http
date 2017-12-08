@@ -10,6 +10,7 @@
 #include <cstring>
 #include <assert.h>
 #include <arpa/inet.h>
+#include "EpollThread.h"
 #include "Configure.h"
 #include "Log.hpp"
 
@@ -21,7 +22,8 @@ public:
 
 private:
     void waitConnected();
-    int tcp_sockfd;
+    int tcp_sockfd_;
     std::thread thread_id;
+    std::vector<EpollThread> thread_pool_{Configure::thread_number};
 };
 #endif //HTTP_TCPSERVER_H
