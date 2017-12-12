@@ -23,3 +23,8 @@ target_link_libraries(testLog jsoncpp pthread)
 set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.hpp Configure.h Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testHttpServer ${testHttpServerSourceFile})
 target_link_libraries(testHttpServer jsoncpp)
+
+
+set(testTcpServerSourceFile test/testTcpServer.cpp TcpConnection.cpp TcpConnection.h TcpServer.cpp TcpServer.h)
+add_executable(testTcpServer ${testTcpServerSourceFile})
+target_link_libraries(testTcpServer pthread)

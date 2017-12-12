@@ -98,9 +98,7 @@ public:
 
     static void start()
     {
-
-        std::thread thread_tmp = std::thread{consumer};
-        thread_id_ = std::make_shared<std::thread>(std::move(thread_tmp));
+        thread_id_ = std::make_shared<std::thread>(consumer);
     }
 
 private:

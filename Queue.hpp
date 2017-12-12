@@ -116,10 +116,6 @@ public:
 
     void push(T new_value)
     {
-        /*
-        * make_shared()函数创建一个shared_ptr<T>的对象并返回。
-        * make_shared()函数要比直接创建shared_ptr对象的方式快且高效，因为它内部仅分配一次内存，消除了shared_ptr 构造时的开销
-        */
         std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
 
         std::unique_ptr<Node> new_node(new Node);

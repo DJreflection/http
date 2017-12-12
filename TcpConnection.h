@@ -5,13 +5,21 @@
 #ifndef HTTP_TCPCONNECTION_H
 #define HTTP_TCPCONNECTION_H
 
+#include <cstdint>
+#include <cassert>
+#include <iostream>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <rpc/types.h>
+#include <arpa/inet.h>
+
 class TcpConnection
 {
 public:
     TcpConnection(int32_t connectfd, struct sockaddr_in client);
 
-    int32_t readMessage(char *buffer, int32_t buffer_len);
-    int32_t sendMessage(char *buffer, int32_t buffer_len);
+    ssize_t readMessage(char* const buffer, const int32_t& buffer_len);
+    ssize_t sendMessage(char* const buffer, const int32_t& message_len);
 
     std::string getSrcAddr();
 private:
