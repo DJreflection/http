@@ -3,7 +3,7 @@ project(http)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp OpSocket.h OpSocket.cpp Configure.cpp Configure.h ThreadWork.cpp ThreadWork.h Time.cpp Time.h)
+set(SOURCE_FILES main.cpp Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(http ${SOURCE_FILES})
 target_link_libraries(http pthread)
 
@@ -20,11 +20,11 @@ set(testLogSourceFile test/testLog.cpp Log.hpp Configure.cpp Configure.h Time.cp
 add_executable(testLog ${testLogSourceFile})
 target_link_libraries(testLog jsoncpp pthread)
 
-set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h EpollThread.cpp EpollThread.h Log.hpp Configure.h Configure.cpp Configure.h Time.cpp Time.h)
+set(testHttpServerSourceFile test/testHttpServer.cpp HttpServer.cpp HttpServer.h Log.hpp TcpServer.cpp TcpServer.h TcpConnection.cpp TcpConnection.h Configure.cpp Configure.h Time.cpp Time.h)
 add_executable(testHttpServer ${testHttpServerSourceFile})
 target_link_libraries(testHttpServer jsoncpp)
 
 
-set(testTcpServerSourceFile test/testTcpServer.cpp TcpConnection.cpp TcpConnection.h TcpServer.cpp TcpServer.h)
-add_executable(testTcpServer ${testTcpServerSourceFile})
-target_link_libraries(testTcpServer pthread)
+set(safdsf test/safdsf.cpp)
+add_executable(safdsf ${safdsf})
+target_link_libraries(safdsf)

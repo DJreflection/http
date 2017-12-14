@@ -21,9 +21,11 @@ public:
     ssize_t readMessage(char* const buffer, const int32_t& buffer_len);
     ssize_t sendMessage(char* const buffer, const int32_t& message_len);
 
+    int32_t getConnectFd();
     std::string getSrcAddr();
+
 private:
-    int connectfd_;
+    int32_t connectfd_;
     struct sockaddr_in client_;
 };
 

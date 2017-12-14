@@ -2,28 +2,21 @@
 // Created by zy on 11/19/17.
 //
 
-#ifndef HTTP_TCPSERVER_H
-#define HTTP_TCPSERVER_H
+#ifndef HTTP_SERVER_H
+#define HTTP_SERVER_H
 
-#include <sys/socket.h>
-#include <thread>
-#include <cstring>
-#include <assert.h>
-#include <arpa/inet.h>
-#include "EpollThread.h"
+#include "TcpServer.h"
 #include "Configure.h"
 #include "Log.hpp"
 
 class HttpServer
 {
 public:
-    HttpServer();
+    HttpServer(const uint16_t& Port);
     void start();
 
 private:
-    void waitConnected();
-    int tcp_sockfd_;
-    std::thread thread_id;
-    std::vector<EpollThread> thread_pool_{Configure::thread_number};
+    TcpServer tcpServer;
 };
-#endif //HTTP_TCPSERVER_H
+
+#endif //HTTP_SERVER_H

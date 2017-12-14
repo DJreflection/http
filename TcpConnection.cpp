@@ -4,13 +4,6 @@
 
 #include "TcpConnection.h"
 
-//class TcpConnection
-//{
-//public:
-//    TcpConnection(int connectfd, struct sockaddr_in client);
-//};
-
-
 TcpConnection::TcpConnection(int connectfd, struct sockaddr_in client) :
     connectfd_(connectfd),
     client_(client)
@@ -28,6 +21,10 @@ ssize_t TcpConnection::sendMessage(char* const buffer, const int32_t& message_le
 {
     assert(message_len >= 0);
     return write(connectfd_, buffer, message_len);
+}
+
+int32_t TcpConnection::getConnectFd() {
+    return connectfd_;
 }
 
 std::string TcpConnection::getSrcAddr() {
