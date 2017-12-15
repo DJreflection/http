@@ -26,7 +26,7 @@ public:
 
     TcpServer(const uint16_t& Port);
     void setThreadNum(const int& number);
-    void setOnMessageCallBack(MessageCallBack_ messageCallBack);
+    void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
     void start();
 
 private:
@@ -60,13 +60,13 @@ private:
     };
 
     // thread number
-    static int32_t thread_number;
+    static uint32_t thread_number;
 
     // Tcp socket
     int32_t tcp_sockfd_;
 
     // OnMessage Call back
-    MessageCallBack_ messageCallBack;
+    MessageCallBack_ messageCallBack_;
     std::vector<std::shared_ptr<EpollThread>> thread_pool;
 };
 

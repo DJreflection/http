@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <jsoncpp/json/json.h>
-#include "../Configure.h"
+#include "../src/Configure.h"
 
 using namespace Json;
 

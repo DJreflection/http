@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "../Time.h"
+#include "../src/Time.h"
 
 using namespace std;
 

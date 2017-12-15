@@ -72,7 +72,7 @@ void TcpServer::EpollThread::listenSocket()
                 continue;
             }
 
-            messageCallBack_((*connect_info), std::string{buffer, read_bytes});
+            messageCallBack_((*connect_info), std::string(buffer, read_bytes));
         }
     }
 }
@@ -106,10 +106,15 @@ void TcpServer::setThreadNum(const int& number)
     thread_number = number;
 }
 
+
+void TcpServer::setOnMessageCallBack(const MessageCallBack_& messageCallBack) {
+    messageCallBack_ = messageCallBack;
+}
+
 void TcpServer::start() {
     for(int i=0; i<thread_number; ++ i)
     {
-        std::shared_ptr<EpollThread> tmp = std::make_shared<>();
+        std::shared_ptr<EpollThread> tmp = std::make_shared<EpollThread>();
         thread_pool.emplace_back(tmp);
     }
 
