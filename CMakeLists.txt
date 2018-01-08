@@ -16,15 +16,11 @@ set(testTimeSourceFile test/testTime.cpp src/Time.cpp src/Time.h)
 add_executable(testTime ${testTimeSourceFile})
 target_link_libraries(testTime jsoncpp)
 
-set(testLogSourceFile test/testLog.cpp src/Log.hpp src/Configure.cpp src/Configure.h src/Time.cpp src/Time.h src/Queue.hpp)
+set(testLogSourceFile test/testLog.cpp src/Log.h src/Configure.cpp src/Configure.h src/Time.cpp src/Time.h src/Queue.h)
 add_executable(testLog ${testLogSourceFile})
 target_link_libraries(testLog jsoncpp pthread)
 
-set(testHttpServerSourceFile test/testHttpServer.cpp src/HttpServer.cpp src/HttpServer.h src/Log.hpp src/TcpServer.cpp src/TcpServer.h src/TcpConnection.cpp src/TcpConnection.h src/Configure.cpp src/Configure.h src/Time.cpp src/Time.h)
+set(testHttpServerSourceFile test/testHttpServer.cpp src/HttpServer.cpp src/HttpServer.h src/Log.h src/TcpServer.cpp src/TcpServer.h src/TcpConnection.cpp src/TcpConnection.h src/Configure.cpp src/Configure.h src/Time.cpp src/Time.h)
 add_executable(testHttpServer ${testHttpServerSourceFile})
 target_link_libraries(testHttpServer jsoncpp)
 
-
-set(testSourceFile test/testtest.cpp)
-add_executable(testSb ${testSourceFile})
-target_link_libraries(testSb)

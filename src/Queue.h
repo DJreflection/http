@@ -2,8 +2,8 @@
 // Created by zy on 17-11-29.
 //
 
-#ifndef HTTP_QUEUE_HPP
-#define HTTP_QUEUE_HPP
+#ifndef HTTP_QUEUE_H
+#define HTTP_QUEUE_H
 
 #include <mutex>
 #include <memory>
@@ -71,7 +71,6 @@ private:
         return std::move(head_lock);
     }
 
-
     std::unique_ptr<Node> wait_pop_head()
     {
         std::unique_lock<std::mutex> head_lock(wait_for_data());
@@ -137,4 +136,4 @@ public:
     }
 };
 
-#endif //HTTP_QUEUE_HPP
+#endif //HTTP_QUEUE_H

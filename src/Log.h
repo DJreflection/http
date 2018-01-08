@@ -11,29 +11,19 @@
 #include <cstring>
 #include <thread>
 #include <memory>
-#include "Queue.hpp"
+#include "Queue.h"
 #include "Time.h"
 
 
 class Log {
-
-private:
-
-    template <typename T>
-    static void print(std::stringstream& buffer, T t)
-    {
-        buffer << t << std::endl;
-    }
-
-    template <typename T, typename... Args>
-    static void print(std::stringstream& buffer, T t, Args... args)
-    {
-        buffer << t;
-        print(buffer, args...);
-    }
-
 public:
-    static void setLogLevel(const std::string& log_level)
+    Log(): log_level_(debug),
+           root_{},
+           thread_id_(nullptr),
+           queue_{}
+    {};
+
+    void setLogLevel(const std::string& log_level)
     {
         if(log_level == "debug")
             log_level_ = debug;
@@ -43,13 +33,13 @@ public:
             log_level_ = warn;
     }
 
-    static void setLogRoot(const std::string& root)
+    void setLogRoot(const std::string& root)
     {
         root_ = root;
     }
 
     template <typename... Args>
-    static void logDebug(Args... args)
+    void logDebug(Args... args)
     {
         if(log_level_ > debug)
             return;
@@ -66,7 +56,7 @@ public:
 
 
     template <typename... Args>
-    static void logNormal(Args... args)
+    void logNormal(Args... args)
     {
         if(log_level_ > normal)
             return;
@@ -83,7 +73,7 @@ public:
 
 
     template <typename... Args>
-    static void logWarn(Args... args)
+    void logWarn(Args... args)
     {
         std::stringstream buffer;
         print(buffer, args...);
@@ -95,13 +85,31 @@ public:
         //std::cout << log_ << std::endl;
     }
 
-
-    static void start()
+    static Log& getInstance()
     {
-        thread_id_ = std::make_shared<std::thread>(consumer);
+        static Log tmp;
+        return tmp;
+    }
+
+    void start()
+    {
+        thread_id_ = std::make_shared<std::thread>(Log::consumer, root_, &queue_);
     }
 
 private:
+    template <typename T>
+    void print(std::stringstream& buffer, T t)
+    {
+        buffer << t << std::endl;
+    }
+
+    template <typename T, typename... Args>
+    void print(std::stringstream& buffer, T t, Args... args)
+    {
+        buffer << t;
+        print(buffer, args...);
+    }
+
 
     enum logLevel{
         debug,
@@ -109,7 +117,7 @@ private:
         warn,
     };
 
-    static void consumer()
+    static void consumer(const std::string& root_,  QueueThread<std::string>* const queue_)
     {
         int len = 0; // max : 67108864
         std::ofstream file;
@@ -122,7 +130,7 @@ private:
             }
 
             std::string log;
-            queue_.wait_and_pop(log);
+            queue_->wait_and_pop(log);
 
             file << log;
             file.flush();
@@ -136,15 +144,10 @@ private:
         }
     }
 
-    static logLevel log_level_;
-    static std::string root_;
-    static std::shared_ptr<std::thread> thread_id_;
-    static QueueThread<std::string> queue_;
+    logLevel log_level_;
+    std::string root_;
+    std::shared_ptr<std::thread> thread_id_;
+    QueueThread<std::string> queue_;
 };
-
-Log::logLevel Log::log_level_ = debug;
-std::string Log::root_ = {};
-std::shared_ptr<std::thread> Log::thread_id_ = nullptr;
-QueueThread<std::string> Log::queue_{};
 
 #endif //HTTP_LOG_H
