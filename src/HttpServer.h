@@ -16,14 +16,16 @@ private:
     public:
         std::string way;
         std::string url;
-        std::string httpVersion;
+        std::string http_version;
         std::string host;
-        std::string userAgent;
-        std::string Connection;
+        std::string user_agent;
+        std::string connection;
     };
 
     class SendHeader{
-
+    public:
+        std::string http_version;
+        std::string status;
     };
 
 public:

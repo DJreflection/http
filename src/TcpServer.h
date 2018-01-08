@@ -26,6 +26,7 @@ public:
 
     TcpServer(const uint16_t& Port);
     void setThreadNum(const int& number);
+    void setOnConnectionCallBack()
     void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
     void start();
 
