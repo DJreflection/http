@@ -4,17 +4,22 @@
 
 #include <unistd.h>
 #include <memory>
-#include "../src/Log.h"
+#include "../src/log.h"
 
 int main()
 {
-    Log::getInstance().setLogRoot("/home/zy/Http/");
-    Log::getInstance().setLogLevel("debug");
 
-    Log::getInstance().start();
-    Log::getInstance().logDebug("fdskfd",1234, "sdfks", "23424", "sdf ", 1234);
-    Log::getInstance().logNormal("sdjskf", 143892, "sdjkf", "1432", 234.23);
-    Log::getInstance().logWarn("sdjskf", 1432.2342, "sfdfksl", "1432", "1324.23");
-    sleep(10);
+
+    HTTP::log::getInstance().setLogRoot("/home/zy/Http/");
+    HTTP::log::getInstance().setLogLevel("debug");
+    HTTP::log::getInstance().start();
+
+    LOG_DEBUG("fdskfd", 1234, "sdfks", "23424", "sdf", 1234);
+    LOG_WARN("sdjskf", 1432.2342, "sfdfksl", "1432", "1324.23");
+    LOG_NORMAL("sdjskf", 143892, "sdjkf", "1432", 234.23);
+    LOG_ERROR("sdjskf", 1432.2342, "sfdfksl", "1432", "1324.23");
+
+    sleep(2);
+    HTTP::log::getInstance().stop();
     return 0;
 }

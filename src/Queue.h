@@ -7,6 +7,7 @@
 
 #include <mutex>
 #include <memory>
+#include <chrono>
 #include <condition_variable>
 
 template <typename T>
@@ -71,6 +72,19 @@ private:
         return std::move(head_lock);
     }
 
+    std::unique_lock<std::mutex> wait_time_for_data(const uint32_t& millisecond_)
+    {
+        std::unique_lock<std::mutex> head_lock(head_mutex);
+        if(data_cond.wait_for(head_lock, std::chrono::milliseconds(millisecond_), [&]()->bool{
+           return head.get() != get_tail();
+        }))
+        {
+            return std::move(head_lock);
+        }
+
+        return std::move(std::unique_lock<std::mutex>());
+    }
+
     std::unique_ptr<Node> wait_pop_head()
     {
         std::unique_lock<std::mutex> head_lock(wait_for_data());
@@ -82,6 +96,27 @@ private:
         std::unique_lock<std::mutex> head_lock(wait_for_data());
         value = std::move(*head->data);
         return pop_head();
+    }
+
+    std::unique_ptr<Node> wait_time_pop_head(const uint32_t& millisecond_)
+    {
+        std::unique_lock<std::mutex> head_lock(wait_time_for_data(millisecond_));
+        if(head_lock.owns_lock())
+        {
+            return pop_head();
+        }
+        return std::unique_ptr<Node>();
+    }
+
+    std::unique_ptr<Node> wait_time_pop_head(T& value, const uint32_t& millisecond_)
+    {
+        std::unique_lock<std::mutex> head_lock(wait_time_for_data(millisecond_));
+        if(head_lock.owns_lock())
+        {
+            value = std::move(*head->data);
+            return pop_head();
+        }
+        return std::unique_ptr<Node>();
     }
 
 public:
@@ -111,6 +146,36 @@ public:
     void wait_and_pop(T& value)
     {
         std::unique_ptr<Node> const old_head = wait_pop_head(value);
+    }
+
+    std::shared_ptr<T> wait_seconds_to_pop()
+    {
+        std::unique_ptr<Node> const old_head = wait_time_pop_head(1000);
+        if(old_head.get())
+        {
+            return old_head->data;
+        }
+        return nullptr;
+    }
+
+    void wait_seconds_to_pop(T& value)
+    {
+        std::unique_ptr<Node> const old_head = wait_time_pop_head(value, 1000);
+    }
+
+    std::shared_ptr<T> wait_time_to_pop(const uint32_t& millisecond_)
+    {
+        std::unique_ptr<Node> const old_head = wait_time_pop_head(millisecond_);
+        if(old_head.get())
+        {
+            return old_head->data;
+        }
+        return nullptr;
+    }
+
+    void wait_time_to_pop(T& value, const uint32_t& millisecond_)
+    {
+        std::unique_ptr<Node> const old_head = wait_time_pop_head(value, millisecond_);
     }
 
     void push(T new_value)
