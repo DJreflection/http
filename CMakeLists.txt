@@ -16,7 +16,7 @@ set(testTimeSourceFile test/testTime.cpp src/Time.cpp src/Time.h)
 add_executable(testTime ${testTimeSourceFile})
 target_link_libraries(testTime jsoncpp)
 
-set(testLogSourceFile test/testLog.cpp src/log.h src/Configure.h src/Time.cpp src/Time.h src/Queue.h)
+set(testLogSourceFile test/testLog.cpp src/Log.h src/Configure.h src/Time.cpp src/Queue.h)
 add_executable(testLog ${testLogSourceFile})
 target_link_libraries(testLog jsoncpp pthread)
 

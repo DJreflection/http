@@ -12,13 +12,14 @@
 #include <thread>
 #include <memory>
 #include <atomic>
+#include <sstream>
 
 #include "Queue.h"
 #include "Time.h"
 
 namespace HTTP{
 
-    class log {
+    class Log {
     public:
         enum LogLevel{
             debug,
@@ -27,14 +28,14 @@ namespace HTTP{
             error,
         };
 
-        log(): log_level_(debug),
+        Log(): log_level_(debug),
                root_{},
                thread_id_(nullptr),
                queue_{},
                running_(false)
         {};
 
-        ~log(){
+        ~Log(){
             if(running_)
             {
                 stop();
@@ -70,16 +71,16 @@ namespace HTTP{
             queue_.push(log_);
         }
 
-        static log& getInstance()
+        static Log& getInstance()
         {
-            static log tmp;
+            static Log tmp;
             return tmp;
         }
 
         void start()
         {
             running_ = true;
-            thread_id_ = std::make_shared<std::thread>(std::bind(&log::consumer, this));
+            thread_id_ = std::make_shared<std::thread>(std::bind(&Log::consumer, this));
         }
 
         void stop()
@@ -142,9 +143,9 @@ namespace HTTP{
     };
 }
 
-#define LOG_DEBUG(args...) HTTP::log::getInstance().doLog(HTTP::log::debug, __FILE__, __LINE__, "debug", args)
-#define LOG_NORMAL(args...)  HTTP::log::getInstance().doLog(HTTP::log::normal, __FILE__, __LINE__, "normal", args)
-#define LOG_WARN(args...) HTTP::log::getInstance().doLog(HTTP::log::warn, __FILE__, __LINE__, "warn", args)
-#define LOG_ERROR(args...) HTTP::log::getInstance().doLog(HTTP::log::error, __FILE__, __LINE__, "error", args)
+#define LOG_DEBUG(args...) HTTP::Log::getInstance().doLog(HTTP::Log::debug, __FILE__, __LINE__, "debug", args)
+#define LOG_NORMAL(args...)  HTTP::Log::getInstance().doLog(HTTP::Log::normal, __FILE__, __LINE__, "normal", args)
+#define LOG_WARN(args...) HTTP::Log::getInstance().doLog(HTTP::Log::warn, __FILE__, __LINE__, "warn", args)
+#define LOG_ERROR(args...) HTTP::Log::getInstance().doLog(HTTP::Log::error, __FILE__, __LINE__, "error", args)
 
 #endif //HTTP_LOG_H

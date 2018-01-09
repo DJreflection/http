@@ -27,6 +27,7 @@ public:
 private:
     int32_t connectfd_;
     struct sockaddr_in client_;
+    void* ptr;
 };
 
 #endif //HTTP_TCPCONNECTION_H

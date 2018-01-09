@@ -31,7 +31,6 @@ const std::string Time::timetToString(const time_t &time)
 {
     struct tm *local_time;
     local_time = localtime(&time);
-
     sprintf(buffer, "%04d年%02d月%02d日%02d:%02d:%02d",
             local_time->tm_year+1900,
             local_time->tm_mon+1,

@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 
 #include "TcpConnection.h"
+#include "Log.h"
 
 class TcpServer
 {
@@ -25,7 +26,7 @@ public:
     typedef std::function<void (const TcpConnection& Conn, const std::string &message)> MessageCallBack_;
 
     TcpServer(const uint16_t& Port);
-    void setThreadNum(const int& number);
+    void setThreadNum(const uint16_t& number);
     void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
     void start();
 
@@ -38,7 +39,7 @@ private:
 
         void epollAddSocket(const int& socketfd, void* const message, const uint32_t& status);
         void epollModSocket(const int& socketfd, const uint32_t& new_status);
-        void setOnMessageCallBack(MessageCallBack_ messageCallBack);
+        void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
         void startListenSocket();
 
     private:
@@ -60,7 +61,7 @@ private:
     };
 
     // thread number
-    static uint32_t thread_number;
+    uint16_t thread_number;
 
     // Tcp socket
     int32_t tcp_sockfd_;

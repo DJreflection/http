@@ -20,8 +20,9 @@ void TcpServer::EpollThread::epollAddSocket(const int& socketfd, void* const mes
     ev.events = status;
     ev.data.ptr = message;
 
-    int tmp = epoll_ctl(socketfd, EPOLL_CTL_ADD, socketfd, &ev);
-    assert(tmp != -1);
+    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_ADD, socketfd, &ev);
+    //LOG_ERROR(tmp);
+    assert(tmp == 0);
 }
 
 void TcpServer::EpollThread::epollModSocket(const int& socketfd, const uint32_t& new_status)
@@ -30,12 +31,12 @@ void TcpServer::EpollThread::epollModSocket(const int& socketfd, const uint32_t&
     memset(&ev, 0, sizeof(ev));
     ev.events = new_status;
 
-    int tmp = epoll_ctl(socketfd, EPOLL_CTL_MOD, socketfd, &ev);
-    assert(tmp != -1);
+    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_MOD, socketfd, &ev);
+    assert(tmp == 0);
 }
 
 
-void TcpServer::EpollThread::setOnMessageCallBack(MessageCallBack_ messageCallBack) {
+void TcpServer::EpollThread::setOnMessageCallBack(const MessageCallBack_& messageCallBack) {
     messageCallBack_ = messageCallBack;
 }
 
@@ -78,7 +79,7 @@ void TcpServer::EpollThread::listenSocket()
 }
 
 
-TcpServer::TcpServer(const uint16_t& Port) {
+TcpServer::TcpServer(const uint16_t& Port):thread_number(4) {
     tcp_sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
     assert(tcp_sockfd_ != -1);
 
@@ -101,7 +102,7 @@ TcpServer::TcpServer(const uint16_t& Port) {
 }
 
 
-void TcpServer::setThreadNum(const int& number)
+void TcpServer::setThreadNum(const uint16_t& number)
 {
     thread_number = number;
 }
@@ -115,6 +116,7 @@ void TcpServer::start() {
     for(int i=0; i<thread_number; ++ i)
     {
         std::shared_ptr<EpollThread> tmp = std::make_shared<EpollThread>();
+        tmp->setOnMessageCallBack(messageCallBack_);
         thread_pool.emplace_back(tmp);
     }
 
@@ -136,5 +138,3 @@ void TcpServer::start() {
             take_turn = 0;
     }
 }
-
-uint32_t TcpServer::thread_number = 4;

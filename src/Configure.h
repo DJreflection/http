@@ -10,25 +10,30 @@
 #include <fstream>
 #include <sstream>
 #include <jsoncpp/json/json.h>
-#include "log.h"
 
 class Configure
 {
 public:
-    explicit Configure(const std::string& uri) :
-            uri_(uri),
+    explicit Configure() :
+            uri_(),
             thread_number_(4),
             port_(80),
             root_("~/www/log/"),
             log_level_("debug")
     {}
 
+    static Configure& getInstance()
+    {
+        static Configure tmp;
+        return tmp;
+    }
+
     void init()
     {
         std::ifstream file_reader(uri_);
         if(!file_reader.is_open())
         {
-            LOG_ERROR("File does");
+            std::cerr << "Path should set be first or File is not exit" << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -36,11 +41,13 @@ public:
         buffer << file_reader.rdbuf();
         file_reader.close();
 
+        //std::cout << buffer.str() << std::endl;
+
         Json::Reader json_reader;
         Json::Value json_data;
         if(!json_reader.parse(buffer.str(), json_data))
         {
-            LOG_ERROR("Config is unvalid");
+            std::cerr << "Config is unvalid" << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -55,6 +62,11 @@ public:
 
         if(json_data.isMember("log_level") && json_data["log_level"].isString())
             log_level_ = json_data["log_level"].asString();
+    }
+
+    void setUri(const std::string& uri)
+    {
+        uri_ = uri;
     }
 
     uint16_t getThreadNum()
@@ -75,8 +87,8 @@ public:
     {
         return log_level_;
     }
-private:
 
+private:
     uint16_t thread_number_;
     uint16_t port_;
     std::string root_;

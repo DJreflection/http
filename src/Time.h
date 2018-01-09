@@ -5,9 +5,8 @@
 #ifndef HTTP_TIME_H
 #define HTTP_TIME_H
 
-#include <time.h>
+#include <ctime>
 #include <iostream>
-#include "Configure.h"
 
 class Time
 {

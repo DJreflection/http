@@ -7,25 +7,25 @@
 
 #include "TcpServer.h"
 #include "Configure.h"
-#include "log.h"
+#include "Log.h"
 
 class HttpServer
 {
 private:
     class RecvHeader{
     public:
-        std::string way;
-        std::string url;
-        std::string http_version;
-        std::string host;
-        std::string user_agent;
-        std::string connection;
+        std::string way_;
+        std::string url_;
+        std::string http_version_;
+        std::string host_;
+        std::string user_agent_;
+        std::string connection_;
     };
 
     class SendHeader{
     public:
-        std::string http_version;
-        std::string status;
+        std::string http_version_;
+        std::string status_;
     };
 
 public:
@@ -36,7 +36,9 @@ public:
 
 private:
     RecvHeader parseHeader(const std::string& message);
-    TcpServer tcpServer;
+    TcpServer tcp_server_;
+
+    std::string root_;
 };
 
 #endif //HTTP_SERVER_H

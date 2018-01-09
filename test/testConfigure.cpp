@@ -13,20 +13,21 @@ using namespace Json;
 int main()
 {
     Json::Value val;
-    val["port"] = 12345;
+    val["port"] = 8080;
     val["root"] = "~/Workspace/http/www";
     val["log_level"] = "debug";
     val["thread_number"] = 4;
 
-    std::ofstream writer("../test/tt");
+    std::ofstream writer("../Config");
     writer << val.toStyledString();
     writer.close();
 
-    Configure::readConfigure("../test/tt");
+    Configure::getInstance().setUri("../Config");
+    Configure::getInstance().init();
 
-    std::cout << "thread_number :" << Configure::thread_number << std::endl;
-    std::cout << "port :" << Configure::port << std::endl;
-    std::cout << "root :" << Configure::root << std::endl;
-    std::cout << "log_level :" << Configure::log_level << std::endl;
+    std::cout << "thread_number :" << Configure::getInstance().getThreadNum() << std::endl;
+    std::cout << "port :" << Configure::getInstance().getPort() << std::endl;
+    std::cout << "root :" << Configure::getInstance().getRoot() << std::endl;
+    std::cout << "log_level :" << Configure::getInstance().getLogLevel() << std::endl;
     return 0;
 }
