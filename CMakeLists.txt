@@ -4,7 +4,7 @@ project(HTTP)
 set(CMAKE_CXX_STANDARD 11)
 
 aux_source_directory(./src Srcs)
-set(httpConfigureSourceFile main.cpp ${Srcs})
+set(httpConfigureSourceFile main.cpp ${Srcs} src/Buffer.cpp src/Buffer.h src/Eventloop.cpp src/Eventloop.h src/Channel.cpp src/Channel.h)
 add_executable(Http ${httpConfigureSourceFile})
 target_link_libraries(Http jsoncpp pthread)
 

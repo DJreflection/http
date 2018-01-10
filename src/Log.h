@@ -111,7 +111,7 @@ namespace HTTP{
             {
                 if(len == 0)
                 {
-                    std::string file_name = root_ + Time::getNowTime();
+                    std::string file_name = root_ + Time::getInstance().getNowTime() + ".log";
                     file.open(file_name, std::ofstream::app);
                 }
 
