@@ -59,21 +59,21 @@ void TcpServer::EpollThread::setNoBlock(int socketfd)
 void TcpServer::EpollThread::listenSocket()
 {
     struct epoll_event event[EVENTSIZE];
-    char buffer[BUFFERSIZE];
 
     while(true)
     {
         int size = epoll_wait(epollfd_, event, EVENTSIZE, -1);
         for(int i=0; i<size; ++ i)
         {
-            TcpConnection *connect_info = (TcpConnection *)event[i].data.ptr;
-            int read_bytes = read(connect_info->getConnectFd(), buffer, BUFFERSIZE);
-            if(read_bytes <= 0)
+            TcpConnection *connect_info = static_cast<TcpConnection *> (event[i].data.ptr);
+            if(event[i].events & EPOLLIN)
             {
-                continue;
+                connect_info->readMessage();
+                messageCallBack_((*connect_info));
+            } else
+            {
+                connect_info->sendMessage();
             }
-
-            messageCallBack_((*connect_info), std::string(buffer, read_bytes));
         }
     }
 }

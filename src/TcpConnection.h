@@ -12,22 +12,60 @@
 #include <unistd.h>
 #include <rpc/types.h>
 #include <arpa/inet.h>
+#include "Buffer.h"
+#include "Log.h"
 
 class TcpConnection
 {
 public:
     TcpConnection(int32_t connectfd, struct sockaddr_in client);
 
-    ssize_t readMessage(char* const buffer, const int32_t& buffer_len);
-    ssize_t sendMessage(char* const buffer, const int32_t& message_len);
+    Buffer read_buffer_;
+    Buffer writ_buffer_;
+
+    void readMessage()
+    {
+        char buffer[1024];
+        ssize_t read_bytes = ::read(connectfd_, buffer, 1024);
+        if(read_bytes < 0)
+        {
+            LOG_ERROR("read_bytes < 0");
+            return;
+        }
+        if(read_bytes == 0)
+            valid_ = false;
+
+        read_buffer_.append(buffer, read_bytes);
+    }
+
+    void writMessage()
+    {
+        ssize_t writ_bytes = ::write(connectfd_, writ_buffer_.beginRead(), writ_buffer_.readableBytes());
+        if(writ_bytes < 0)
+        {
+            LOG_ERROR("writ_bytes < 0");
+            return;
+        }
+        writ_buffer_.retrieve(writ_bytes);
+    }
+
+    ssize_t read();
+
+    void setEvents(int status)
+    {
+        events = status;
+    }
 
     int32_t getConnectFd();
     std::string getSrcAddr();
 
+    bool isValid();
+
 private:
     int32_t connectfd_;
     struct sockaddr_in client_;
-    void* ptr;
+    int events;
+    bool valid_;
 };
 
 #endif //HTTP_TCPCONNECTION_H
