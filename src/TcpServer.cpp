@@ -132,9 +132,9 @@ void TcpServer::start() {
         int socketConnect = accept(tcp_sockfd_, (struct sockaddr *)&client, &clientlen);
 
         TcpConnection *connect_info = new TcpConnection(socketConnect, client);
-        thread_pool[take_turn ++ ]->epollAddSocket(socketConnect, connect_info, EPOLLIN);
+        thread_pool[take_turn]->epollAddSocket(socketConnect, connect_info, EPOLLIN);
 
-        if(take_turn == thread_pool.size())
+        if(++ take_turn == thread_pool.size())
             take_turn = 0;
     }
 }

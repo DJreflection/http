@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cassert>
 #include <string>
+#include <algorithm>
 
 class Buffer
 {
@@ -66,6 +67,12 @@ public:
             buffer_[writer_index_] = str[i];
     }
 
+    const char *findCRLF() const
+    {
+        char CRLF[] = "\r\n";
+        const char* crlf = std::search(beginRead(), beginWrite(), CRLF, CRLF+2);
+        return crlf == beginWrite() ? nullptr : crlf;
+    }
 
     char *beginWrite()
     {

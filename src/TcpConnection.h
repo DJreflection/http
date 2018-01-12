@@ -49,17 +49,34 @@ public:
         writ_buffer_.retrieve(writ_bytes);
     }
 
-    ssize_t read();
+    std::string read()
+    {
+        if(read_buffer_.findCRLF() != nullptr)
+            return std::string(read_buffer_.beginRead(), read_buffer_.readableBytes());
+    }
 
     void setEvents(int status)
     {
         events = status;
     }
 
-    int32_t getConnectFd();
-    std::string getSrcAddr();
+    int32_t getConnectFd(){
+        return connectfd_;
+    }
 
-    bool isValid();
+    std::string getSrcAddr(){
+        return std::string{inet_ntoa(client_.sin_addr)};
+    }
+
+    void setBekill()
+    {
+        valid_ = false;
+    }
+
+    bool isValid()
+    {
+        valid_ = true;
+    }
 
 private:
     int32_t connectfd_;
