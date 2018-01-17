@@ -4,107 +4,43 @@
 
 #include "TcpServer.h"
 
-TcpServer::EpollThread::EpollThread()
-{
-    epollfd_ = epoll_create1(EPOLL_CLOEXEC);
-}
-
-const uint32_t TcpServer::EpollThread::BUFFERSIZE = 10240;
-const uint32_t TcpServer::EpollThread::EVENTSIZE = 1024;
-
-
-void TcpServer::EpollThread::epollAddSocket(const int& socketfd, void* const message, const uint32_t& status)
-{
-    struct epoll_event ev;
-    memset(&ev, 0, sizeof(ev));
-    ev.events = status;
-    ev.data.ptr = message;
-
-    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_ADD, socketfd, &ev);
-    //LOG_ERROR(tmp);
-    assert(tmp == 0);
-}
-
-void TcpServer::EpollThread::epollModSocket(const int& socketfd, const uint32_t& new_status)
-{
-    struct epoll_event ev;
-    memset(&ev, 0, sizeof(ev));
-    ev.events = new_status;
-
-    int tmp = epoll_ctl(epollfd_, EPOLL_CTL_MOD, socketfd, &ev);
-    assert(tmp == 0);
-}
-
-
-void TcpServer::EpollThread::setOnMessageCallBack(const MessageCallBack_& messageCallBack) {
-    messageCallBack_ = messageCallBack;
-}
-
-void TcpServer::EpollThread::startListenSocket()
-{
-    thread_id_ = std::make_shared<std::thread>(std::bind(&EpollThread::listenSocket, this));
-}
-
-
-void TcpServer::EpollThread::setNoBlock(int socketfd)
-{
-    int status_old;
-    status_old = fcntl(socketfd, F_GETFL, 0);
-    assert(status_old >= 0);
-
-    int tmp = fcntl(socketfd, F_SETFL, status_old | O_NONBLOCK);
-    assert(tmp >= 0);
-}
-
-void TcpServer::EpollThread::listenSocket()
-{
-    struct epoll_event event[EVENTSIZE];
-
-    while(true)
-    {
-        int size = epoll_wait(epollfd_, event, EVENTSIZE, -1);
-        for(int i=0; i<size; ++ i)
-        {
-            TcpConnection *connect_info = static_cast<TcpConnection *> (event[i].data.ptr);
-            if(event[i].events & EPOLLIN)
-            {
-                connect_info->readMessage();
-                messageCallBack_((*connect_info));
-            } else
-            {
-                connect_info->sendMessage();
-            }
-        }
-    }
-}
-
-
-TcpServer::TcpServer(const uint16_t& Port):thread_number(4) {
+TcpServer::TcpServer(const uint16_t& port) : thread_number_(4), port_(port) {
     tcp_sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
-    assert(tcp_sockfd_ != -1);
+    if(tcp_sockfd_ == -1)
+    {
+        LOG_ERROR("Create socket failed!");
+        exit(EXIT_FAILURE);
+    }
 
     int flags = 1;
-    setsockopt(tcp_sockfd_, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &flags, sizeof(flags));
-    //setsockopt(tcp_sockfd, IPPROTO_TCP, TCP_NODELAY, &flags, sizeof(flags));
+    if(setsockopt(tcp_sockfd_, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &flags, sizeof(flags)) != 0)
+    {
+        LOG_ERROR("setsockopt error!");
+    }
 
     struct  sockaddr_in server;
     memset(&server, 0, sizeof(server));
-    server.sin_port = htons(Port);
+    server.sin_port = htons(port_);
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    int tmp = 0;
-    tmp = bind(tcp_sockfd_, (struct sockaddr *)&server, sizeof(server));
-    assert(tmp != -1);
+    if(bind(tcp_sockfd_, (struct sockaddr *)&server, sizeof(server)) == -1)
+    {
+        LOG_ERROR("bind failed");
+        exit(EXIT_FAILURE);
+    }
 
-    tmp = listen(tcp_sockfd_, 1024);
-    assert(tmp != -1);
+    if(listen(tcp_sockfd_, 1024) != 0)
+    {
+        LOG_ERROR("listen failed");
+        exit(EXIT_FAILURE);
+    }
 }
 
 
 void TcpServer::setThreadNum(const uint16_t& number)
 {
-    thread_number = number;
+    thread_number_ = number;
 }
 
 
@@ -113,15 +49,15 @@ void TcpServer::setOnMessageCallBack(const MessageCallBack_& messageCallBack) {
 }
 
 void TcpServer::start() {
-    for(int i=0; i<thread_number; ++ i)
+
+    for(int i=0; i<thread_number_; ++ i)
     {
-        std::shared_ptr<EpollThread> tmp = std::make_shared<EpollThread>();
-        tmp->setOnMessageCallBack(messageCallBack_);
-        thread_pool.emplace_back(tmp);
+        std::shared_ptr<EventLoop> tmp = std::make_shared<EventLoop>();
+        thread_pool_.emplace_back(tmp);
     }
 
-    for(int i=0; i<thread_number; ++ i)
-        thread_pool[i]->startListenSocket();
+    for(int i=0; i<thread_number_; ++ i)
+        thread_pool_[i]->startLoop();
 
     struct sockaddr_in client;
     socklen_t clientlen = sizeof(client);
@@ -132,9 +68,13 @@ void TcpServer::start() {
         int socketConnect = accept(tcp_sockfd_, (struct sockaddr *)&client, &clientlen);
 
         TcpConnection *connect_info = new TcpConnection(socketConnect, client);
-        thread_pool[take_turn]->epollAddSocket(socketConnect, connect_info, EPOLLIN);
+        if(!thread_pool_[take_turn]->addListenReadableEvent(socketConnect, connect_info))
+        {
+            delete(connect_info);
+            continue;
+        }
 
-        if(++ take_turn == thread_pool.size())
+        if(++ take_turn == thread_pool_.size())
             take_turn = 0;
     }
 }

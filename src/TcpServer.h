@@ -17,6 +17,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include "EventLoop.h"
 #include "TcpConnection.h"
 #include "Log.h"
 
@@ -26,49 +27,29 @@ public:
     typedef std::function<void (const TcpConnection& Conn, const std::string &message)> MessageCallBack_;
 
     TcpServer(const uint16_t& Port);
+    ~TcpServer(){
+        for(auto i: thread_pool_)
+        {
+            i->stopLoop();
+        }
+    }
+
     void setThreadNum(const uint16_t& number);
     void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
     void start();
 
 private:
 
-    class EpollThread
-    {
-    public:
-        EpollThread();
-
-        void epollAddSocket(const int& socketfd, void* const message, const uint32_t& status);
-        void epollModSocket(const int& socketfd, const uint32_t& new_status);
-        void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
-        void startListenSocket();
-
-    private:
-        void setNoBlock(int socketfd);
-        void listenSocket();
-
-        // epoll descriptor
-        int epollfd_;
-
-        // thread ID
-        std::shared_ptr<std::thread> thread_id_;
-
-        // OnMessage Call Back
-        MessageCallBack_ messageCallBack_;
-
-        // event_size and buffer_size
-        static const uint32_t EVENTSIZE;
-        static const uint32_t BUFFERSIZE;
-    };
-
     // thread number
-    uint16_t thread_number;
+    uint16_t thread_number_;
 
     // Tcp socket
     int32_t tcp_sockfd_;
+    uint16_t port_;
 
     // OnMessage Call back
     MessageCallBack_ messageCallBack_;
-    std::vector<std::shared_ptr<EpollThread>> thread_pool;
+    std::vector<std::shared_ptr<EventLoop>> thread_pool_;
 };
 
 #endif //HTTP_TCPSERVER_H

@@ -7,38 +7,81 @@
 
 #include <cstdint>
 #include <thread>
+#include <map>
+#include <sys/epoll.h>
 #include "TcpConnection.h"
 
 class EventLoop
 {
 public:
-    typedef std::function<void (const TcpConnection& Conn, const std::string &message)> MessageCallBack_;
+    //typedef std::function<void (const TcpConnection& Conn)> OnEventCallBack;
 
     EventLoop();
 
-    void addListenEvent(const int& socketfd, void*const message, const uint32_t& status);
-    void modListenEvent(const int& socketfd, const uint32_t& new_status);
-    void deleteListenEvent(const int& socketfd);
+    ~EventLoop(){
+        if(is_valid_)
+        {
+            is_valid_ = false;
+            stopLoop();
+        }
+    }
 
+    bool addListenReadableEvent(const int& sockfd, TcpConnection* const tcpConnection) {
+        return addListenEvent(sockfd, reinterpret_cast<void*>(tcpConnection), EPOLLIN);
+    }
 
-    void setOnMessageCallBack(const MessageCallBack_& messageCallBack);
-    void startListenSocket();
+    bool addListenWriteableEvent(const int& sockfd, TcpConnection* const tcpConnection) {
+        return addListenEvent(sockfd, reinterpret_cast<void*>(tcpConnection), EPOLLOUT);
+    }
+
+    bool modListenEventReadableEvent(const int& sockfd) {
+        void* message = sockfd_to_message_[sockfd];
+        return modListenEvent(sockfd, message, EPOLLIN);
+    }
+
+    bool modListenEventWriteableEvent(const int& sockfd) {
+        void* message = sockfd_to_message_[sockfd];
+        return modListenEvent(sockfd, message, EPOLLOUT);
+    }
+
+    bool deleteListenEvent(const int& socketfd);
+
+//    void setOnEvent(const OnEventCallBack& event_call_back)
+//    {
+//        event_call_back_ = event_call_back;
+//    }
+
+    void startLoop() {
+        is_valid_ = true;
+        thread_id_ = std::make_shared<std::thread>(std::bind(&EventLoop::startListenEvent, this));
+    }
+
+    void stopLoop() {
+        is_valid_ = false;
+        if(thread_id_.get()->joinable())
+        {
+            thread_id_.get()->join();
+        }
+    }
+
+    bool isRunning()
+    {
+        return (is_valid_ && thread_id_.get());
+    }
 
 private:
+    void startListenEvent();
+    bool addListenEvent(const int& socketfd, void* const message, const uint32_t& status);
+    bool modListenEvent(const int& socketfd, void* const message, const uint32_t& new_status);
 
-    void listenSocket();
 
     int epollfd_;
-
-    // thread ID
     std::shared_ptr<std::thread> thread_id_;
+    bool is_valid_;
 
-    // OnMessage Call Back
-    MessageCallBack_ messageCallBack_;
-
-    // event_size and buffer_size
+    std::map<int, void*> sockfd_to_message_;
+    //OnEventCallBack event_call_back_;
     static const uint32_t EVENTSIZE;
-    static const uint32_t BUFFERSIZE;
 };
 
 

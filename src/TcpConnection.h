@@ -36,6 +36,8 @@ public:
             valid_ = false;
 
         read_buffer_.append(buffer, read_bytes);
+
+
     }
 
     void writMessage()
@@ -75,7 +77,7 @@ public:
 
     bool isValid()
     {
-        valid_ = true;
+        return valid_;
     }
 
 private:
