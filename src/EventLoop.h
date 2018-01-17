@@ -9,13 +9,10 @@
 #include <thread>
 #include <map>
 #include <sys/epoll.h>
-#include "TcpConnection.h"
 
 class EventLoop
 {
 public:
-    //typedef std::function<void (const TcpConnection& Conn)> OnEventCallBack;
-
     EventLoop();
 
     ~EventLoop(){
@@ -26,12 +23,12 @@ public:
         }
     }
 
-    bool addListenReadableEvent(const int& sockfd, TcpConnection* const tcpConnection) {
-        return addListenEvent(sockfd, reinterpret_cast<void*>(tcpConnection), EPOLLIN);
+    bool addListenReadableEvent(const int& sockfd, void* const tcpConnection) {
+        return addListenEvent(sockfd, tcpConnection, EPOLLIN);
     }
 
-    bool addListenWriteableEvent(const int& sockfd, TcpConnection* const tcpConnection) {
-        return addListenEvent(sockfd, reinterpret_cast<void*>(tcpConnection), EPOLLOUT);
+    bool addListenWriteableEvent(const int& sockfd, void* const tcpConnection) {
+        return addListenEvent(sockfd, tcpConnection, EPOLLOUT);
     }
 
     bool modListenEventReadableEvent(const int& sockfd) {
@@ -45,11 +42,6 @@ public:
     }
 
     bool deleteListenEvent(const int& socketfd);
-
-//    void setOnEvent(const OnEventCallBack& event_call_back)
-//    {
-//        event_call_back_ = event_call_back;
-//    }
 
     void startLoop() {
         is_valid_ = true;
@@ -80,7 +72,6 @@ private:
     bool is_valid_;
 
     std::map<int, void*> sockfd_to_message_;
-    //OnEventCallBack event_call_back_;
     static const uint32_t EVENTSIZE;
 };
 

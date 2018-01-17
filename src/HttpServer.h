@@ -5,6 +5,7 @@
 #ifndef HTTP_SERVER_H
 #define HTTP_SERVER_H
 
+#include "Buffer.h"
 #include "TcpServer.h"
 #include "Configure.h"
 #include "Log.h"
@@ -31,7 +32,7 @@ private:
 public:
     HttpServer(const uint16_t& Port);
 
-    void OnMessage(const TcpConnection& conn,const std::string& message);
+    void OnMessage(TcpConnection& conn, Buffer& buffer);
     void start();
 
 private:

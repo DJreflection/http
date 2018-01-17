@@ -22,59 +22,47 @@ public:
 
     const int32_t getNowYear()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_year+1900;
+        return getNow()->tm_year+1900;
     }
 
     const int32_t getNowMonth()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_mon + 1;
+        return getNow()->tm_mon + 1;
     }
+
     const int32_t getNowMday()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_mday;
+        return getNow()->tm_mday;
     }
 
     const int32_t getNowYday()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_yday;
+        return getNow()->tm_yday;
     }
 
     const int32_t getNowHour()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_hour;
+        return getNow()->tm_hour;
     }
 
     const int32_t getNowMin()
     {
-        time_t time_now = time(nullptr);
-        struct tm *time_local;
-        time_local = localtime(&time_now);
-        return time_local->tm_min;
+        return getNow()->tm_min;
     }
 
     const int32_t getNowSec()
     {
+        return getNow()->tm_sec;
+    }
+private:
+
+    tm* getNow()
+    {
         time_t time_now = time(nullptr);
         struct tm *time_local;
         time_local = localtime(&time_now);
-        return time_local->tm_sec;
+        return time_local;
     }
-private:
     char buffer_[64];
 };
 

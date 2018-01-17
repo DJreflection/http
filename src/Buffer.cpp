@@ -4,5 +4,20 @@
 
 #include "Buffer.h"
 
-size_t Buffer::reserve_bytes = 8;
 size_t Buffer::buffer_size = 1024;
+
+void Buffer::makeSpace(const size_t& len)
+{
+    if(writableBytes() + reader_index_  < len)
+    {
+        buffer_.resize(writer_index_ + len);
+    }
+    else
+    {
+        for(size_t j = 0, i=reader_index_; i<writer_index_; ++ i, ++ j)
+            buffer_[j]= buffer_[i];
+
+        writer_index_ = readableBytes();
+        reader_index_ = 0;
+    }
+}

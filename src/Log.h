@@ -84,7 +84,10 @@ public:
     void stop()
     {
         running_ = false;
-        thread_id_.get()->join();
+        if(thread_id_.get()->joinable())
+        {
+            thread_id_.get()->join();
+        }
     }
 
 private:
@@ -140,9 +143,9 @@ private:
     std::atomic_bool running_;
 };
 
-#define LOG_DEBUG(args...) Log::getInstance().doLog(Log::debug, __FILE__, __LINE__, "debug", args)
-#define LOG_NORMAL(args...)  Log::getInstance().doLog(Log::normal, __FILE__, __LINE__, "normal", args)
-#define LOG_WARN(args...) Log::getInstance().doLog(Log::warn, __FILE__, __LINE__, "warn", args)
-#define LOG_ERROR(args...) Log::getInstance().doLog(Log::error, __FILE__, __LINE__, "error", args)
+#define LOG_DEBUG(args...) Log::getInstance().doLog(Log::debug, __FILE__, __LINE__, Time::getInstance().getNowTime(), "debug", args)
+#define LOG_NORMAL(args...)  Log::getInstance().doLog(Log::normal, __FILE__, __LINE__, Time::getInstance().getNowTime(), "normal", args)
+#define LOG_WARN(args...) Log::getInstance().doLog(Log::warn, __FILE__, __LINE__, Time::getInstance().getNowTime(), "warn", args)
+#define LOG_ERROR(args...) Log::getInstance().doLog(Log::error, __FILE__, __LINE__, Time::getInstance().getNowTime(), "error", args)
 
 #endif //HTTP_LOG_H

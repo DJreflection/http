@@ -3,6 +3,7 @@
 //
 
 #include "EventLoop.h"
+#include "TcpConnection.h"
 
 EventLoop::EventLoop():
         epollfd_(epoll_create1(EPOLL_CLOEXEC)),
@@ -26,12 +27,19 @@ void EventLoop::startListenEvent() {
         for(int i=0; i<size; ++ i)
         {
             TcpConnection *connect_info = static_cast<TcpConnection *> (event[i].data.ptr);
-            if(event[i].events & (EPOLLIN | EPOLLHUP))
+            if(event[i].events & EPOLLIN)
             {
                 connect_info->readMessage();
             } else
             {
+                connect_info->writMessage();
+            }
 
+            if(connect_info->isValid() == false)
+            {
+                LOG_NORMAL(connect_info->getSrcAddr(), "disConnection");
+                deleteListenEvent(connect_info->getConnectFd());
+                delete(connect_info);
             }
         }
     }

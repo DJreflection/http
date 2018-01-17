@@ -45,10 +45,12 @@ void TcpServer::setThreadNum(const uint16_t& number)
 
 
 void TcpServer::setOnMessageCallBack(const MessageCallBack_& messageCallBack) {
-    messageCallBack_ = messageCallBack;
+    message_call_back_ = messageCallBack;
 }
 
 void TcpServer::start() {
+
+    LOG_DEBUG("TcpServer start");
 
     for(int i=0; i<thread_number_; ++ i)
     {
@@ -66,15 +68,22 @@ void TcpServer::start() {
     while(true)
     {
         int socketConnect = accept(tcp_sockfd_, (struct sockaddr *)&client, &clientlen);
+        if(socketConnect < 0)
+            continue;
 
-        TcpConnection *connect_info = new TcpConnection(socketConnect, client);
+        TcpConnection *connect_info = new TcpConnection(socketConnect, client, thread_pool_[take_turn]);
+        connect_info->setOnMessageCallBack(message_call_back_);
+
+        LOG_NORMAL(inet_ntoa(client.sin_addr), "Connected at", Time::getInstance().getNowTime());
+
         if(!thread_pool_[take_turn]->addListenReadableEvent(socketConnect, connect_info))
         {
+            LOG_ERROR("addListenReadableEvent failed");
             delete(connect_info);
             continue;
         }
 
-        if(++ take_turn == thread_pool_.size())
+        if((++ take_turn) == thread_pool_.size())
             take_turn = 0;
     }
 }

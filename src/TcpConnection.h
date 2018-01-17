@@ -12,16 +12,19 @@
 #include <unistd.h>
 #include <rpc/types.h>
 #include <arpa/inet.h>
+#include <functional>
+
+#include "EventLoop.h"
 #include "Buffer.h"
 #include "Log.h"
 
 class TcpConnection
 {
 public:
-    TcpConnection(int32_t connectfd, struct sockaddr_in client);
 
-    Buffer read_buffer_;
-    Buffer writ_buffer_;
+    typedef std::function<void (const TcpConnection& conn, const Buffer& buffer)> OnMessageCallBack;
+
+    TcpConnection(int32_t connectfd, struct sockaddr_in client, const std::shared_ptr<EventLoop>& loop);
 
     void readMessage()
     {
@@ -36,36 +39,48 @@ public:
             valid_ = false;
 
         read_buffer_.append(buffer, read_bytes);
-
-
+        on_message_call_back_(*this, read_buffer_);
     }
 
     void writMessage()
     {
-        ssize_t writ_bytes = ::write(connectfd_, writ_buffer_.beginRead(), writ_buffer_.readableBytes());
+        ssize_t writ_bytes = ::write(connectfd_, write_buffer_.beginRead(), write_buffer_.readableBytes());
         if(writ_bytes < 0)
         {
             LOG_ERROR("writ_bytes < 0");
             return;
         }
-        writ_buffer_.retrieve(writ_bytes);
+        write_buffer_.retrieve(writ_bytes);
+
+        if(getWriteBufferSize() == 0 && keep_alive_ == false)
+        {
+            valid_ = false;
+        }
     }
 
-    std::string read()
-    {
-        if(read_buffer_.findCRLF() != nullptr)
-            return std::string(read_buffer_.beginRead(), read_buffer_.readableBytes());
+    void setOnMessageCallBack(const OnMessageCallBack& onMessageCallBack){
+        on_message_call_back_ = onMessageCallBack;
     }
-
-    void setEvents(int status)
-    {
-        events = status;
+    
+    void write(const std::string& message){
+        write_buffer_.append(message);
+        event_loop_weak_ptr_->modListenEventWriteableEvent(connectfd_);
     }
-
+    
     int32_t getConnectFd(){
         return connectfd_;
     }
 
+    size_t getReadBufferSize()
+    {
+        return read_buffer_.readableBytes();
+    }
+
+    size_t getWriteBufferSize()
+    {
+        return write_buffer_.readableBytes();
+    }
+    
     std::string getSrcAddr(){
         return std::string{inet_ntoa(client_.sin_addr)};
     }
@@ -75,16 +90,30 @@ public:
         valid_ = false;
     }
 
+    void setKeepAlive()
+    {
+        keep_alive_ = true;
+    }
+
     bool isValid()
     {
         return valid_;
     }
 
 private:
+
+    Buffer read_buffer_;
+    Buffer write_buffer_;
+
     int32_t connectfd_;
     struct sockaddr_in client_;
-    int events;
+
+    bool keep_alive_;
     bool valid_;
+    OnMessageCallBack on_message_call_back_;
+    std::shared_ptr<EventLoop> event_loop_weak_ptr_;
+
+    static const size_t buffer_max_;
 };
 
 #endif //HTTP_TCPCONNECTION_H

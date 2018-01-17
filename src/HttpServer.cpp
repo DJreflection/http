@@ -10,10 +10,19 @@ HttpServer::HttpServer(const uint16_t& Port) : tcp_server_(Port)
     tcp_server_.setOnMessageCallBack(std::bind(&HttpServer::OnMessage, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void HttpServer::OnMessage(const TcpConnection &conn, const std::string& message)
+void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
 {
-    std::cout << message << std::endl;
-    RecvHeader recvHeader = parseHeader(message);
+    const char* crlfcrlf = buffer.findCRLFCRLF();
+    if(crlfcrlf == nullptr && buffer.readableBytes() > 10240)
+    {
+        conn.setBekill();
+        return;
+    }
+
+    if(crlfcrlf == nullptr)
+        return;
+
+    read_until
 }
 
 void HttpServer::start()

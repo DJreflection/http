@@ -18,17 +18,18 @@
 #include <sys/socket.h>
 
 #include "EventLoop.h"
+#include "Time.h"
 #include "TcpConnection.h"
 #include "Log.h"
 
 class TcpServer
 {
 public:
-    typedef std::function<void (const TcpConnection& Conn, const std::string &message)> MessageCallBack_;
+    typedef std::function<void (const TcpConnection& Conn, const Buffer &buffer)> MessageCallBack_;
 
     TcpServer(const uint16_t& Port);
     ~TcpServer(){
-        for(auto i: thread_pool_)
+        for(auto& i: thread_pool_)
         {
             i->stopLoop();
         }
@@ -48,7 +49,7 @@ private:
     uint16_t port_;
 
     // OnMessage Call back
-    MessageCallBack_ messageCallBack_;
+    MessageCallBack_ message_call_back_;
     std::vector<std::shared_ptr<EventLoop>> thread_pool_;
 };
 
