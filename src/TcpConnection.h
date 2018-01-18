@@ -100,8 +100,9 @@ public:
         return valid_;
     }
 
-private:
+    void* ptr;
 
+private:
     Buffer read_buffer_;
     Buffer write_buffer_;
 
@@ -112,8 +113,6 @@ private:
     bool valid_;
     OnMessageCallBack on_message_call_back_;
     std::shared_ptr<EventLoop> event_loop_weak_ptr_;
-
-    static const size_t buffer_max_;
 };
 
 #endif //HTTP_TCPCONNECTION_H

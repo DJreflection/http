@@ -11,7 +11,6 @@ TcpConnection::TcpConnection(int connectfd, struct sockaddr_in client, const std
     write_buffer_(),
     valid_(true),
     keep_alive_(false),
-    event_loop_weak_ptr_(loop)
+    event_loop_weak_ptr_(loop),
+    ptr(nullptr)
 {};
-
-size_t TcpConnection::buffer_max_ = 10240;
