@@ -3,6 +3,8 @@
 //
 
 #include "HttpServer.h"
+#include "HttpRequest.h"
+#include "HttpResponse.h"
 
 HttpServer::HttpServer(const uint16_t& Port) : tcp_server_(Port)
 {
@@ -12,67 +14,70 @@ HttpServer::HttpServer(const uint16_t& Port) : tcp_server_(Port)
 void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
 {
     if(conn.ptr == nullptr)
+        conn.ptr = new HttpRequest();
+
+    HttpRequest* http_request_ptr = static_cast<HttpRequest*>(conn.ptr);
+    if(!http_request_ptr->parseMessage(buffer))
     {
-        conn.ptr =
+        HttpResponse http_response("HTTP/1.1", HttpResponse::status_400, "Bad Request");
+        http_response.addHeader("Content-Length", std::to_string(HttpResponse::pages_400_.size()));
+        http_response.addHeader("Content-Type", "text/html");
+        http_response.addHeader("Keep-Alive", "close");
+        http_response.setContent(HttpResponse::pages_400_);
+        conn.write(http_response.toString());
+        delete(http_request_ptr);
+        conn.setBekill();
+        return ;
     }
-    const char* crlf = buffer.findCRLF();
-    if(crlf == nullptr && buffer.readableBytes() > 10240)
+
+    if(!http_request_ptr->isComplete())
+        return ;
+
+    if(http_request_ptr->getHttpMethod() != HttpRequest::Method_get)
     {
-        return;
-    }
-
-    if(crlfcrlf == nullptr)
-        return;
-
-    LOG_DEBUG(std::string(buffer.beginRead(), buffer.readableBytes()));
-
-    std::string tmp(const_cast<const char*>(buffer.beginRead()), buffer.findCRLF());
-    std::stringstream string_buffer(tmp);
-    buffer.retrieve(tmp.size()+2);
-
-    std::string way, uri, version;
-    string_buffer >> way >> uri >> version;
-    if(way.empty() || uri.empty() || version.empty())
-    {
-        LOG_ERROR(conn.getSrcAddr(), "http requests header error");
+        HttpResponse http_response("HTTP/1.1", HttpResponse::status_400, "Bad Request");
+        http_response.addHeader("Content-Length", std::to_string(HttpResponse::pages_400_.size()));
+        http_response.addHeader("Content-Type", "text/html");
+        http_response.addHeader("Keep-Alive", "close");
+        http_response.setContent(HttpResponse::pages_400_);
+        conn.write(http_response.toString());
+        delete(http_request_ptr);
         conn.setBekill();
         return;
     }
 
-    if(way != "GET")
+    std::string uri = root_ + http_request_ptr->getHttpUri();
+    std::fstream file(uri);
+    if(!file.is_open())
     {
+        HttpResponse http_response("HTTP/1.1", HttpResponse::status_404, "File don't exit!");
+        http_response.addHeader("Content-Length", std::to_string(HttpResponse::pages_404_.size()));
+        http_response.addHeader("Content-Type", "text/html");
+        http_response.addHeader("Keep-Alive", "close");
+        http_response.setContent(HttpResponse::pages_404_);
+        conn.write(http_response.toString());
+        delete(http_request_ptr);
         conn.setBekill();
         return;
     }
+    std::stringstream body_sstring;
+    body_sstring << file.rdbuf();
+    file.close();
 
-    HTTP_HEADER recv_header;
-    recv_header["way"] = way;
-    recv_header["uri"] = uri;
-    recv_header["version"] = version;
+    std::string body_string(body_sstring.str());
 
-    while(true)
+    HttpResponse http_response("HTTP/1.1", HttpResponse::status_200, "OK");
+    http_response.addHeader("Content-Length", std::to_string(body_string.size()));
+    http_response.addHeader("Content-Type", "text/html");
+    if(http_request_ptr->keepAlive())
     {
-        std::string res(const_cast<const char*>(buffer.beginRead()), buffer.findCRLF());
-        if(res.empty())
-            break;
-
-        size_t n;
-        if((n = res.find(':')) == std::string::npos)
-        {
-            LOG_ERROR(conn.getSrcAddr(), "http requests header error");
-            conn.setBekill();
-            break;
-        }
-
-        recv_header[res.substr(0, n)] = res.substr(n+1, res.size());
-        buffer.retrieve(res.size()+2);
+        http_response.addHeader("Connection", "keep-alive");
+        http_response.addHeader("Keep-Alive", "timeout=10");
     }
-
-    if(!conn.isValid())
+    else
     {
-        return;
+        http_response.addHeader("Keep-Alive", "close");
     }
-
 }
 
 void HttpServer::start()
@@ -97,26 +102,4 @@ std::string HttpServer::close_alive_{
         \r\n"
 };
 
-std::string HttpServer::pages_404_{
-        "<!DOCTYPE html>\n\
-        <html>\n<head>\n\
-        \t<title>404</title>\n\
-        </head>\n\
-        <body>\n\
-        <H1>NOT FOUND!</H1>\n\
-        </body>\n\
-        </html>"
-};
-
-
-std::string HttpServer::pages_400_{
-        "<!DOCTYPE html>\n\
-        <html>\n<head>\n\
-        \t<title>400</title>\n\
-        </head>\n\
-        <body>\n\
-        <H1>Bad Requests</H1>\n\
-        </body>\n\
-        </html>"
-};
 

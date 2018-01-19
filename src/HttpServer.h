@@ -5,6 +5,7 @@
 #ifndef HTTP_SERVER_H
 #define HTTP_SERVER_H
 
+#include <fstream>
 #include "Buffer.h"
 #include "TcpServer.h"
 #include "Configure.h"
@@ -18,6 +19,11 @@ public:
     HttpServer(const uint16_t& Port);
 
     void OnMessage(TcpConnection& conn, Buffer& buffer);
+    void setRoot(const std::string& root)
+    {
+        root_ = root;
+    }
+
     void start();
 
 private:
@@ -27,8 +33,6 @@ private:
 
     static const std::string keep_alive_;
     static const std::string close_alive_;
-    static const std::string pages_404_;
-    static const std::string pages_400_;
 };
 
 #endif //HTTP_SERVER_H
