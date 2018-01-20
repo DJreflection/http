@@ -22,10 +22,16 @@ class TcpConnection
 {
 public:
 
-    typedef std::function<void (const TcpConnection& conn, const Buffer& buffer)> OnMessageCallBack;
+    typedef std::function<void (TcpConnection& conn, Buffer& buffer)> OnMessageCallBack;
 
     TcpConnection(int32_t connectfd, struct sockaddr_in client, const std::shared_ptr<EventLoop>& loop);
 
+    ~TcpConnection(){
+        if(connectting_)
+        {
+            close(connectfd_);
+        }
+    }
     void readMessage()
     {
         char buffer[1024];
@@ -51,11 +57,6 @@ public:
             return;
         }
         write_buffer_.retrieve(writ_bytes);
-
-        if(getWriteBufferSize() == 0 && keep_alive_ == false)
-        {
-            valid_ = false;
-        }
     }
 
     void setOnMessageCallBack(const OnMessageCallBack& onMessageCallBack){
@@ -70,29 +71,13 @@ public:
     int32_t getConnectFd(){
         return connectfd_;
     }
-
-    size_t getReadBufferSize()
-    {
-        return read_buffer_.readableBytes();
-    }
-
-    size_t getWriteBufferSize()
-    {
-        return write_buffer_.readableBytes();
-    }
     
     std::string getSrcAddr(){
         return std::string{inet_ntoa(client_.sin_addr)};
     }
 
-    void setBekill()
-    {
+    void setUnValid() {
         valid_ = false;
-    }
-
-    void setKeepAlive()
-    {
-        keep_alive_ = true;
     }
 
     bool isValid()
@@ -100,6 +85,19 @@ public:
         return valid_;
     }
 
+    bool isBeKill()
+    {
+        return ((valid_ == false) && (write_buffer_.readableBytes() == 0));
+    }
+
+    void disConnected()
+    {
+        if(connectting_)
+        {
+            connectting_ = false;
+            close(connectfd_);
+        }
+    }
     void* ptr;
 
 private:
@@ -109,7 +107,7 @@ private:
     int32_t connectfd_;
     struct sockaddr_in client_;
 
-    bool keep_alive_;
+    bool connectting_;
     bool valid_;
     OnMessageCallBack on_message_call_back_;
     std::shared_ptr<EventLoop> event_loop_weak_ptr_;

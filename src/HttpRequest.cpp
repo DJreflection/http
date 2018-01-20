@@ -35,7 +35,7 @@ bool HttpRequest::parseMessage(Buffer& message)
                 status_ = 4;
         }
 
-        const char* str = message.findCRLF();
+
 
         // all lower
         auto toStandardString = [](const std::string& str)->std::string{
@@ -57,21 +57,24 @@ bool HttpRequest::parseMessage(Buffer& message)
             return res;
         };
 
+        const char* str = message.findCRLF();
+
         if(str)
         {
             if(status_ == 0)
             {
                 std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
-
                 size_t x1 = res.find(' '), x2 = res.rfind(' ');
                 std::string way(res.begin(), res.begin()+x1);
                 std::string uri(res.begin()+x1+1, res.begin()+x2);
                 std::string version(res.begin()+x2+1, res.end());
 
+                LOG_DEBUG(way, uri, version);
+
                 if(way.empty() || uri.empty() || version.empty())
                     return false;
 
-                message.retrieve(res.size()+1);
+                message.retrieve(res.size()+2);
                 http_header_["way"] = toStandardString(way);
                 http_header_["uri"] = toStandardString(uri);
                 http_header_["version"] = toStandardString(version);
@@ -80,25 +83,30 @@ bool HttpRequest::parseMessage(Buffer& message)
             else if(status_ == 2)
             {
                 std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
+
+                message.retrieve(res.size()+2);
+                LOG_DEBUG(res);
+
                 if(res.empty())
                 {
                     if(http_header_["way"] !=  "get" && http_header_.count("content-length") > 0)
-                    {
                         status_ = 3;
-                    } else
+                    else
                         status_ = 4;
                 }
 
                 size_t x1 = res.find(':');
                 std::string key(res.begin(), res.begin()+x1);
                 std::string value(res.begin()+x1+1, res.end());
-
+                LOG_DEBUG("key: ", key, "value: ", value);
                 http_header_[toStandardString(key)] = toStandardString(value);
             }
         } else
         {
-            break;
+            //break;
         }
+        if(status_ == 4 || status_ == 3)
+            break;
     }
     return true;
 }

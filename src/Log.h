@@ -110,11 +110,11 @@ private:
         std::ofstream file;
         while(running_)
         {
-            if(len == 0)
-            {
-                std::string file_name = root_ + Time::getInstance().getNowTime() + ".log";
-                file.open(file_name, std::ofstream::app);
-            }
+//            if(len == 0)
+//            {
+//                std::string file_name = root_ + Time::getInstance().getNowTime() + ".log";
+//                file.open(file_name, std::ofstream::app);
+//            }
 
             std::string log;
             queue_.wait_seconds_to_pop(log);
@@ -123,8 +123,10 @@ private:
                 continue;
             }
 
-            file << log;
-            len += log.size();
+            std::cout << log << std::endl;
+            //file << log;
+            //file.flush();
+            //len += log.size();
 
             if(len >= 67108864)
             {

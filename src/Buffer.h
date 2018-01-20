@@ -16,7 +16,7 @@
 class Buffer
 {
 public:
-    explicit Buffer(size_t init_size=buffer_size) :
+    explicit Buffer(const size_t& init_size=buffer_size_) :
             buffer_(init_size),
             reader_index_(0),
             writer_index_(0)
@@ -111,7 +111,7 @@ private:
     std::vector<char> buffer_;
     size_t reader_index_;
     size_t writer_index_;
-    static const size_t buffer_size;
+    static const size_t buffer_size_;
 };
 
 

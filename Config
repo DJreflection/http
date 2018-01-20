@@ -1,6 +1,6 @@
 {
    "log_level" : "debug",
-   "port" : 12345,
-   "root" : "~/workspace/http/www",
+   "port" : 8080,
+   "root" : "/home/zy/workspace/",
    "thread_number" : 4
 }

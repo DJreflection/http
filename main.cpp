@@ -9,10 +9,13 @@ int main() {
     Configure::getInstance().setUri("../Config");
     Configure::getInstance().init();
 
-    HTTP::Log::getInstance().setLogRoot(Configure::getInstance().getRoot());
-    HTTP::Log::getInstance().setLogLevel(Configure::getInstance().getLogLevel());
-    HTTP::Log::getInstance().start();
+    std::cout << Configure::getInstance().getPort() << std::endl;
 
-    HttpServer httpServer(8080);
+    Log::getInstance().setLogRoot(Configure::getInstance().getRoot());
+    Log::getInstance().setLogLevel(Configure::getInstance().getLogLevel());
+    Log::getInstance().start();
+
+    HttpServer httpServer(Configure::getInstance().getPort());
+    httpServer.setRoot(Configure::getInstance().getRoot());
     httpServer.start();
 }

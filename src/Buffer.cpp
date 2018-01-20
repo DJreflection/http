@@ -4,7 +4,7 @@
 
 #include "Buffer.h"
 
-size_t Buffer::buffer_size = 1024;
+const size_t Buffer::buffer_size_ = 1024;
 
 void Buffer::makeSpace(const size_t& len)
 {

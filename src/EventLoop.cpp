@@ -15,7 +15,7 @@ EventLoop::EventLoop():
 }
 
 
-uint32_t EventLoop::EVENTSIZE = 1024;
+const uint32_t EventLoop::EVENTSIZE = 1024;
 
 
 void EventLoop::startListenEvent() {
@@ -33,9 +33,9 @@ void EventLoop::startListenEvent() {
             } else
             {
                 connect_info->writMessage();
-            }
+            };
 
-            if(connect_info->isValid() == false)
+            if(connect_info->isBeKill())
             {
                 LOG_NORMAL(connect_info->getSrcAddr(), "disConnection");
                 deleteListenEvent(connect_info->getConnectFd());

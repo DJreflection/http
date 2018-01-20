@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include "Buffer.h"
+#include "Log.h"
 
 class HttpRequest
 {

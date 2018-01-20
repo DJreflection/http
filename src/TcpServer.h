@@ -25,7 +25,7 @@
 class TcpServer
 {
 public:
-    typedef std::function<void (const TcpConnection& Conn, const Buffer &buffer)> MessageCallBack_;
+    typedef std::function<void (TcpConnection& Conn, Buffer &buffer)> MessageCallBack_;
 
     TcpServer(const uint16_t& Port);
     ~TcpServer(){
