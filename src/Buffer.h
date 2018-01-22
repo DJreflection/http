@@ -12,6 +12,7 @@
 #include <cassert>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 class Buffer
 {
@@ -34,8 +35,8 @@ public:
 
     void retrieve(size_t len)
     {
+        //std::cerr << "len :" << len << "readableBytes: " << readableBytes() << std::endl;
         assert(len <= readableBytes());
-
         if(len <= readableBytes())
             reader_index_ += len;
         else

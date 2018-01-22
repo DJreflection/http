@@ -110,11 +110,11 @@ private:
         std::ofstream file;
         while(running_)
         {
-//            if(len == 0)
-//            {
-//                std::string file_name = root_ + Time::getInstance().getNowTime() + ".log";
-//                file.open(file_name, std::ofstream::app);
-//            }
+            if(len == 0)
+            {
+                std::string file_name = root_ + Time::getInstance().getNowTime() + ".log";
+                file.open(file_name, std::ofstream::app);
+            }
 
             std::string log;
             queue_.wait_seconds_to_pop(log);
@@ -124,9 +124,9 @@ private:
             }
 
             std::cout << log << std::endl;
-            //file << log;
-            //file.flush();
-            //len += log.size();
+            file << log;
+            file.flush();
+            len += log.size();
 
             if(len >= 67108864)
             {
@@ -145,9 +145,9 @@ private:
     std::atomic_bool running_;
 };
 
-#define LOG_DEBUG(args...) Log::getInstance().doLog(Log::debug, __FILE__, __LINE__, Time::getInstance().getNowTime(), "debug", args)
-#define LOG_NORMAL(args...)  Log::getInstance().doLog(Log::normal, __FILE__, __LINE__, Time::getInstance().getNowTime(), "normal", args)
-#define LOG_WARN(args...) Log::getInstance().doLog(Log::warn, __FILE__, __LINE__, Time::getInstance().getNowTime(), "warn", args)
-#define LOG_ERROR(args...) Log::getInstance().doLog(Log::error, __FILE__, __LINE__, Time::getInstance().getNowTime(), "error", args)
+#define LOG_DEBUG(args...) Log::getInstance().doLog(Log::debug, __FILE__, __LINE__, Time::getInstance().getNowTime(), "debug", ##args)
+#define LOG_NORMAL(args...)  Log::getInstance().doLog(Log::normal, __FILE__, __LINE__, Time::getInstance().getNowTime(), "normal", ##args)
+#define LOG_WARN(args...) Log::getInstance().doLog(Log::warn, __FILE__, __LINE__, Time::getInstance().getNowTime(), "warn", ##args)
+#define LOG_ERROR(args...) Log::getInstance().doLog(Log::error, __FILE__, __LINE__, Time::getInstance().getNowTime(), "error", ##args)
 
 #endif //HTTP_LOG_H

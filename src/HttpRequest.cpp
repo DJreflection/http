@@ -6,6 +6,7 @@
 
 bool HttpRequest::parseMessage(Buffer& message)
 {
+    LOG_DEBUG();
     while(true)
     {
         if(status_ == 3)
@@ -64,28 +65,32 @@ bool HttpRequest::parseMessage(Buffer& message)
             if(status_ == 0)
             {
                 std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
+                message.retrieve(res.size()+2);
+
                 size_t x1 = res.find(' '), x2 = res.rfind(' ');
                 std::string way(res.begin(), res.begin()+x1);
                 std::string uri(res.begin()+x1+1, res.begin()+x2);
                 std::string version(res.begin()+x2+1, res.end());
 
-                LOG_DEBUG(way, uri, version);
+                //LOG_DEBUG(way, uri, version);
 
                 if(way.empty() || uri.empty() || version.empty())
                     return false;
 
-                message.retrieve(res.size()+2);
                 http_header_["way"] = toStandardString(way);
                 http_header_["uri"] = toStandardString(uri);
                 http_header_["version"] = toStandardString(version);
+
+                //LOG_DEBUG(http_header_["way"], http_header_["uri"], http_header_["version"]);
                 status_ = 2;
             }
             else if(status_ == 2)
             {
                 std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
 
+                std::cerr << "len :" << res.size() + 2 << "readableBytes: " << message.readableBytes() << std::endl;
                 message.retrieve(res.size()+2);
-                LOG_DEBUG(res);
+                //LOG_DEBUG("res.size() == ", res.size());
 
                 if(res.empty())
                 {
@@ -93,12 +98,15 @@ bool HttpRequest::parseMessage(Buffer& message)
                         status_ = 3;
                     else
                         status_ = 4;
+
+                    LOG_DEBUG("status: ", (int)status_);
+                    LOG_DEBUG("Readable: ", message.readableBytes());
+                    break;
                 }
 
                 size_t x1 = res.find(':');
                 std::string key(res.begin(), res.begin()+x1);
                 std::string value(res.begin()+x1+1, res.end());
-                LOG_DEBUG("key: ", key, "value: ", value);
                 http_header_[toStandardString(key)] = toStandardString(value);
             }
         } else
