@@ -6,7 +6,6 @@
 
 bool HttpRequest::parseMessage(Buffer& message)
 {
-    LOG_DEBUG();
     while(true)
     {
         if(status_ == 3)
@@ -58,13 +57,13 @@ bool HttpRequest::parseMessage(Buffer& message)
             return res;
         };
 
-        const char* str = message.findCRLF();
+        const char* crlf = message.findCRLF();
 
-        if(str)
+        if(crlf)
         {
             if(status_ == 0)
             {
-                std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
+                std::string res(reinterpret_cast<const char*>(message.beginRead()), crlf);
                 message.retrieve(res.size()+2);
 
                 size_t x1 = res.find(' '), x2 = res.rfind(' ');
@@ -78,19 +77,19 @@ bool HttpRequest::parseMessage(Buffer& message)
                     return false;
 
                 http_header_["way"] = toStandardString(way);
-                http_header_["uri"] = toStandardString(uri);
+                http_header_["uri"] = uri;
                 http_header_["version"] = toStandardString(version);
-
+                setHttpMethod(http_header_["way"]);
+                setHttpUri(http_header_["uri"]);
+                setHttpVersion(http_header_["version"]);
                 //LOG_DEBUG(http_header_["way"], http_header_["uri"], http_header_["version"]);
                 status_ = 2;
             }
             else if(status_ == 2)
             {
-                std::string res(reinterpret_cast<const char*>(message.beginRead()), str);
+                std::string res(reinterpret_cast<const char*>(message.beginRead()), crlf);
 
-                std::cerr << "len :" << res.size() + 2 << "readableBytes: " << message.readableBytes() << std::endl;
                 message.retrieve(res.size()+2);
-                //LOG_DEBUG("res.size() == ", res.size());
 
                 if(res.empty())
                 {
@@ -99,8 +98,6 @@ bool HttpRequest::parseMessage(Buffer& message)
                     else
                         status_ = 4;
 
-                    LOG_DEBUG("status: ", (int)status_);
-                    LOG_DEBUG("Readable: ", message.readableBytes());
                     break;
                 }
 

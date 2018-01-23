@@ -22,7 +22,7 @@ void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
         LOG_DEBUG("parseMessage");
         conn.write(HttpResponse400.toString());
         delete(http_request_ptr);
-        conn.setUnValid();
+        conn.setKeepAlive(false);
         return ;
     }
 
@@ -35,7 +35,7 @@ void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
     {
         conn.write(HttpResponse400.toString());
         delete(http_request_ptr);
-        conn.setUnValid();
+        conn.setKeepAlive(false);
         return;
     }
 
@@ -48,7 +48,7 @@ void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
     {
         conn.write(HttpResponse404.toString());
         delete(http_request_ptr);
-        conn.setUnValid();
+        conn.setKeepAlive(false);
         return;
     }
 
@@ -62,13 +62,14 @@ void HttpServer::OnMessage(TcpConnection &conn, Buffer& buffer)
     {
         http_response.setKeepAlive();
         conn.write(http_response.toString());
+        conn.setKeepAlive(true);
         http_request_ptr->reset();
     }
     else
     {
         conn.write(http_response.toString());
         delete(http_request_ptr);
-        conn.setUnValid();
+        conn.setKeepAlive(false);
         return;
     }
 }

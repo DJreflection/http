@@ -41,8 +41,9 @@ public:
             LOG_ERROR("read_bytes < 0");
             return;
         }
+
         if(read_bytes == 0)
-            valid_ = false;
+            keep_alive_ = false;
 
         read_buffer_.append(buffer, read_bytes);
         on_message_call_back_(*this, read_buffer_);
@@ -76,18 +77,30 @@ public:
         return std::string{inet_ntoa(client_.sin_addr)};
     }
 
-    void setUnValid() {
-        valid_ = false;
-    }
-
-    bool isValid()
-    {
-        return valid_;
-    }
 
     bool isBeKill()
     {
-        return ((valid_ == false) && (write_buffer_.readableBytes() == 0));
+        return ((!keep_alive_) && (write_buffer_.readableBytes() == 0));
+    }
+
+    void setKeepAlive(const bool& keep_alive)
+    {
+        keep_alive_ = keep_alive;
+    }
+
+    bool isKeepAlive()
+    {
+        return keep_alive_;
+    }
+
+    size_t writeBufferSize()
+    {
+        return write_buffer_.readableBytes();
+    }
+
+    size_t readBufferSize()
+    {
+        return read_buffer_.readableBytes();
     }
 
     void disConnected()
@@ -108,7 +121,7 @@ private:
     struct sockaddr_in client_;
 
     bool connectting_;
-    bool valid_;
+    bool keep_alive_;
     OnMessageCallBack on_message_call_back_;
     std::shared_ptr<EventLoop> event_loop_weak_ptr_;
 };

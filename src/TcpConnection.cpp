@@ -10,7 +10,7 @@ TcpConnection::TcpConnection(int connectfd, struct sockaddr_in client, const std
     read_buffer_(),
     write_buffer_(),
     connectting_(true),
-    valid_(true),
+    keep_alive_(true),
     event_loop_weak_ptr_(loop),
     ptr(nullptr)
 {};

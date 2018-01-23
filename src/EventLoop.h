@@ -66,7 +66,6 @@ private:
     bool addListenEvent(const int& socketfd, void* const message, const uint32_t& status);
     bool modListenEvent(const int& socketfd, void* const message, const uint32_t& new_status);
 
-
     int epollfd_;
     std::shared_ptr<std::thread> thread_id_;
     bool is_valid_;

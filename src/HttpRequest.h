@@ -29,22 +29,6 @@ public:
                      status_(0)
     {};
 
-    void setHttpMethod(const std::string& http_method)
-    {
-        if(http_method == "GET")
-            http_method_ = Method_get;
-        else if(http_method == "POST")
-            http_method_ = Method_post;
-        else if(http_method == "HEAD")
-            http_method_ = Method_head;
-        else if(http_method == "PUT")
-            http_method_ = Method_put;
-        else if(http_method == "DELETE")
-            http_method_ = Method_delete;
-        else
-            http_method_ = Method_unknow;
-    }
-
     HttpMethod getHttpMethod() {
         return http_method_;
     }
@@ -89,6 +73,24 @@ public:
     }
 
 private:
+
+    void setHttpMethod(const std::string& http_method)
+    {
+        LOG_DEBUG(http_method);
+        if(http_method == "get")
+            http_method_ = Method_get;
+        else if(http_method == "post")
+            http_method_ = Method_post;
+        else if(http_method == "head")
+            http_method_ = Method_head;
+        else if(http_method == "put")
+            http_method_ = Method_put;
+        else if(http_method == "delete")
+            http_method_ = Method_delete;
+        else
+            http_method_ = Method_unknow;
+    }
+
     std::map<std::string, std::string> http_header_;
     HttpMethod http_method_;
     std::string http_uri_;

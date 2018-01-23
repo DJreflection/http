@@ -41,6 +41,11 @@ void EventLoop::startListenEvent() {
                 deleteListenEvent(connect_info->getConnectFd());
                 delete(connect_info);
             }
+            else
+            {
+                if(connect_info->isKeepAlive() && (connect_info->writeBufferSize() == 0))
+                    modListenEventReadableEvent(connect_info->getConnectFd());
+            }
         }
     }
 }

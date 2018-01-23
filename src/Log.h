@@ -123,7 +123,7 @@ private:
                 continue;
             }
 
-            std::cout << log << std::endl;
+            //std::cerr << log << std::endl;
             file << log;
             file.flush();
             len += log.size();

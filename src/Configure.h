@@ -41,8 +41,6 @@ public:
         buffer << file_reader.rdbuf();
         file_reader.close();
 
-        //std::cout << buffer.str() << std::endl;
-
         Json::Reader json_reader;
         Json::Value json_data;
         if(!json_reader.parse(buffer.str(), json_data))
